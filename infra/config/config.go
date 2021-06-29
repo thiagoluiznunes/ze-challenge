@@ -7,7 +7,10 @@ import (
 )
 
 type Config struct {
-	AppName string `mapstructure:"app-name"`
+	AppName    string `mapstructure:"app-name"`
+	Debug      bool   `mapstructure:"debug"`
+	HTTPPort   uint   `mapstructure:"http-port"`
+	HTTPPrefix string `mapstructure:"http-prefix"`
 }
 
 func Read() (*Config, error) {
