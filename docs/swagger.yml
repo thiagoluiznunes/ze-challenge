@@ -1,0 +1,24 @@
+swagger: "2.0"
+info:
+  version: "1.0"
+  title: Zé Delivery API
+  contact:
+    email: "thiagoluiz.dev@gmail.com"
+
+basePath: /api/v1/
+
+consumes:
+- application/json
+produces:
+- application/json
+schemes:
+- http
+
+securityDefinitions:
+  bearerAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+
+host: localhost:8000
+paths:

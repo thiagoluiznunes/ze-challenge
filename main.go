@@ -14,7 +14,7 @@ func main() {
 
 	cfg, err := config.Read()
 	if err != nil {
-		fmt.Println("Couldn't read config file")
+		fmt.Println("couldn't read config file")
 		return
 	}
 	_, err = json.Marshal(cfg)

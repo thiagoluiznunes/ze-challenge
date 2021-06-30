@@ -1,0 +1,41 @@
+version: '3.7'
+volumes:
+  data:
+services:
+  api:
+    build: .
+    container_name: ze_delivery_api
+    restart: unless-stopped
+    ports:
+     - "8000:8000" # http
+    #  - "443:443" # https
+    env_file: .env
+    links:
+      - db
+    depends_on:
+      - db
+  db:
+    image: mysql:latest
+    container_name: mysqldb
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    volumes:
+      - data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 10YKs8yyHIV0TxFI
+      MYSQL_USER: ze_user
+      MYSQL_PASSWORD: CCsMyZM280zzSeM4
+      MYSQL_DATABASE: ze_delivery_api
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    container_name: swagger-ui
+    ports:
+    - "8001:8080"
+    volumes:
+      - ./docs/swagger.yml:/swagger.yml
+    environment:
+      SWAGGER_JSON: /swagger.yml
+    links:
+      - api
+      - db
