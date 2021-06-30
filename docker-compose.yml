@@ -7,35 +7,36 @@ services:
     container_name: ze_delivery_api
     restart: unless-stopped
     ports:
-     - "8000:8000" # http
+     - "5000:5000" # http
     #  - "443:443" # https
-    env_file: .env
     links:
       - db
     depends_on:
       - db
   db:
-    image: mysql:latest
-    container_name: mysqldb
+    image: mongo:latest
+    container_name: mongo_db
     restart: unless-stopped
     ports:
-      - "3306:3306"
+      - "27017:27017"
     volumes:
-      - data:/var/lib/mysql
+      - /data/db
+      - ./init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh:ro
     environment:
-      MYSQL_ROOT_PASSWORD: 10YKs8yyHIV0TxFI
-      MYSQL_USER: ze_user
-      MYSQL_PASSWORD: CCsMyZM280zzSeM4
-      MYSQL_DATABASE: ze_delivery_api
-  swagger-ui:
-    image: swaggerapi/swagger-ui
-    container_name: swagger-ui
-    ports:
-    - "8001:8080"
-    volumes:
-      - ./docs/swagger.yml:/swagger.yml
-    environment:
-      SWAGGER_JSON: /swagger.yml
-    links:
-      - api
-      - db
+      MONGO_INITDB_ROOT_PASSWORD: 10YKs8yyHIV0TxFI
+      MONGO_INITDB_ROOT_USERNAME: ze_admin
+      MONGO_DB: ze_delivery_api
+      MONGO_USER: ze_user
+      MONGO_USER_PASSWORD: 10YKs8yyHIV0TxFI
+  # swagger-ui:
+  #   image: swaggerapi/swagger-ui
+  #   container_name: swagger-ui
+  #   ports:
+  #   - "8001:8080"
+  #   volumes:
+  #     - ./docs/swagger.yml:/swagger.yml
+  #   environment:
+  #     SWAGGER_JSON: /swagger.yml
+  #   links:
+  #     - api
+  #     - db
