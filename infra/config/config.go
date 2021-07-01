@@ -11,6 +11,11 @@ type Config struct {
 	Debug      bool   `mapstructure:"debug"`
 	HTTPPort   uint   `mapstructure:"http-port"`
 	HTTPPrefix string `mapstructure:"http-prefix"`
+	DBHost     string `mapstructure:"db-host"`
+	DBPort     string `mapstructure:"db-port"`
+	DBName     string `mapstructure:"db-name"`
+	DBUser     string `mapstructure:"db-user"`
+	DBPassword string `mapstructure:"db-password"`
 }
 
 func Read() (*Config, error) {
