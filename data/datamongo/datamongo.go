@@ -80,3 +80,7 @@ func GetDB(cfg config.Config) (client *mongo.Client, ctx *context.Context, err e
 func (c *Conn) Close() (err error) {
 	return c.client.Disconnect(*c.ctx)
 }
+
+func (c *Conn) Partner() contract.PartnerRepo {
+	return newPartnerRepo(c.client)
+}
