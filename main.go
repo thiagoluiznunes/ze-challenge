@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	log "github.com/sirupsen/logrus"
 	"github.com/thiagoluiznunes/ze-challenge/data"
 	"github.com/thiagoluiznunes/ze-challenge/infra/config"
@@ -29,7 +30,7 @@ func main() {
 		return
 	}
 
-	log.Warn(fmt.Sprintf("connecting to the database at %s:%s.", cfg.DBHost, cfg.DBPort))
+	log.Info(fmt.Sprintf("connecting to the database at %s:%s.", cfg.DBHost, cfg.DBPort))
 	db, err := data.Connect(*(cfg))
 	if err != nil {
 		fmt.Println(err)
@@ -54,9 +55,11 @@ func main() {
 	appRouter.AddRouters(partnerRoute)
 
 	srv.AddAppRouter(appRouter)
-	log.Info("runninng server at localhost:", cfg.HTTPPort)
-	err = srv.Run()
+	srv.AddMiddleware(middleware.Logger())
 
+	log.Info("runninng server at localhost:", cfg.HTTPPort)
+
+	err = srv.Run()
 	if err != nil {
 		log.Error("could not start the server.")
 		log.Error("error running service.")

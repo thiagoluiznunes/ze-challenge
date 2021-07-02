@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	rootRoute = "/"
+	rootRoute = ""
 )
 
 //FormRoute holds user router
