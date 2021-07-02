@@ -13,16 +13,15 @@ import (
 
 var (
 	instance     *Conn
-	dbInstance   *mongo.Client
 	onceDB       sync.Once
 	onceInstance sync.Once
-	dbContext    *context.Context
 	connErr      error
 )
 
 // Conn is the MySQL connection manager
 type Conn struct {
 	client *mongo.Client
+	db     *mongo.Database
 	ctx    *context.Context
 }
 
@@ -30,12 +29,12 @@ type Conn struct {
 func Instance(cfg config.Config) (contract.DataManager, error) {
 
 	onceInstance.Do(func() {
-		client, context, err := GetDB(cfg)
+		conn, err := GetDB(cfg)
 		if err != nil {
 			connErr = err
 			return
 		}
-		instance = &Conn{client: client, ctx: context}
+		instance = &conn
 	})
 
 	return instance, connErr
@@ -53,28 +52,27 @@ func GetClientOptions(cfg config.Config) (clientOptions *options.ClientOptions) 
 	return clientOptions
 }
 
-func GetDB(cfg config.Config) (client *mongo.Client, ctx *context.Context, err error) {
+func GetDB(cfg config.Config) (conn Conn, err error) {
 
 	onceDB.Do(func() {
 		clientOptions := GetClientOptions(cfg)
-		client, err = mongo.NewClient(clientOptions)
+		conn.client, err = mongo.NewClient(clientOptions)
 		if err != nil {
 			connErr = err
 			return
 		}
+		conn.db = conn.client.Database(cfg.DBName)
 
 		context, _ := context.WithTimeout(context.Background(), 10*time.Second)
-		err = client.Connect(context)
+		err = conn.client.Connect(context)
 		if err != nil {
 			connErr = err
 			return
 		}
-
-		dbInstance = client
-		dbContext = &context
+		conn.ctx = &context
 	})
 
-	return dbInstance, dbContext, connErr
+	return conn, connErr
 }
 
 func (c *Conn) Close() (err error) {
@@ -82,5 +80,5 @@ func (c *Conn) Close() (err error) {
 }
 
 func (c *Conn) Partner() contract.PartnerRepo {
-	return newPartnerRepo(c.client)
+	return newPartnerRepo(c.db)
 }

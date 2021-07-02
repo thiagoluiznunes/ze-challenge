@@ -11,6 +11,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	log "github.com/sirupsen/logrus"
 	"github.com/thiagoluiznunes/ze-challenge/data"
+	"github.com/thiagoluiznunes/ze-challenge/domain/service"
 	"github.com/thiagoluiznunes/ze-challenge/infra/config"
 	"github.com/thiagoluiznunes/ze-challenge/server"
 	"github.com/thiagoluiznunes/ze-challenge/server/router"
@@ -21,30 +22,34 @@ func main() {
 
 	cfg, err := config.Read()
 	if err != nil {
-		log.Error("couldn't read config file")
-		return
+		endAsErr(err, "couldn't read config file")
 	}
 	_, err = json.Marshal(cfg)
-	if err != nil {
-		log.Error(err)
-		return
-	}
+	endAsErr(err, "couldn't marshal config file")
 
 	log.Info(fmt.Sprintf("connecting to the database at %s:%s.", cfg.DBHost, cfg.DBPort))
 	db, err := data.Connect(*(cfg))
-	if err != nil {
-		fmt.Println(err)
-	}
+	endAsErr(err, "couldn't connect to database.")
 
 	atInterruption(func() {
 		log.Printf("closing database connection.")
 		db.Close()
 	})
 
+	svc, err := service.New(db, cfg)
+	endAsErr(err, "couldn't create service structure.")
+
+	partnerService := service.NewPartnerService(svc)
+
+	initServer(cfg, partnerService)
+}
+
+func initServer(cfg *config.Config, partnerService *service.PartnerService) {
+
 	e := echo.New()
 
 	// Add controllers
-	partnerController := partnerroute.NewController(cfg)
+	partnerController := partnerroute.NewController(cfg, partnerService)
 
 	// Initialize Routers
 	partnerRoute := partnerroute.NewRouter("partner", partnerController)
@@ -59,13 +64,8 @@ func main() {
 
 	log.Info("runninng server at localhost:", cfg.HTTPPort)
 
-	err = srv.Run()
-	if err != nil {
-		log.Error("could not start the server.")
-		log.Error("error running service.")
-		time.Sleep(time.Millisecond * 50) // needed for printing all messages before exiting
-		os.Exit(1)
-	}
+	err := srv.Run()
+	endAsErr(err, "couldn't start the server.")
 }
 
 func atInterruption(fn func()) {
@@ -77,4 +77,12 @@ func atInterruption(fn func()) {
 		fn()
 		os.Exit(0)
 	}()
+}
+
+func endAsErr(err error, message string) {
+	if err != nil {
+		log.Error(message)
+		time.Sleep(time.Millisecond * 50) // needed for printing all messages before exiting
+		os.Exit(1)
+	}
 }

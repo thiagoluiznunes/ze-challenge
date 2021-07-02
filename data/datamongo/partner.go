@@ -4,24 +4,38 @@ import (
 	"context"
 
 	"github.com/thiagoluiznunes/ze-challenge/domain/entity"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // Schema name constants
 const (
-	SchemaPartner = "Partners"
+	PartnerCollection = "Partners"
 )
 
 type partnerRepo struct {
-	client *mongo.Client
+	db         *mongo.Database
+	collection *mongo.Collection
 }
 
-func newPartnerRepo(client *mongo.Client) *partnerRepo {
+func newPartnerRepo(db *mongo.Database) *partnerRepo {
 	return &partnerRepo{
-		client: client,
+		db:         db,
+		collection: db.Collection(PartnerCollection),
 	}
 }
 
 func (r *partnerRepo) Add(ctx context.Context, partner entity.Partner) (err error) {
+
+	document, err := bson.Marshal(partner)
+	if err != nil {
+		return err
+	}
+
+	_, err = r.collection.InsertOne(ctx, document)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
