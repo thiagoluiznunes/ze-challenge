@@ -3,31 +3,33 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 	"os/signal"
+	"time"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
+	log "github.com/sirupsen/logrus"
 	"github.com/thiagoluiznunes/ze-challenge/data"
 	"github.com/thiagoluiznunes/ze-challenge/infra/config"
 	"github.com/thiagoluiznunes/ze-challenge/server"
 	"github.com/thiagoluiznunes/ze-challenge/server/router"
+	"github.com/thiagoluiznunes/ze-challenge/server/router/partnerroute"
 )
 
 func main() {
 
 	cfg, err := config.Read()
 	if err != nil {
-		fmt.Println("couldn't read config file")
+		log.Error("couldn't read config file")
 		return
 	}
 	_, err = json.Marshal(cfg)
 	if err != nil {
-		fmt.Println(err)
+		log.Error(err)
 		return
 	}
 
-	fmt.Printf("connecting to the database at %s:%s.", cfg.DBHost, cfg.DBPort)
+	log.Warn(fmt.Sprintf("connecting to the database at %s:%s.", cfg.DBHost, cfg.DBPort))
 	db, err := data.Connect(*(cfg))
 	if err != nil {
 		fmt.Println(err)
@@ -39,10 +41,28 @@ func main() {
 	})
 
 	e := echo.New()
+
+	// Add controllers
+	partnerController := partnerroute.NewController(cfg)
+
+	// Initialize Routers
+	partnerRoute := partnerroute.NewRouter("partner", partnerController)
+
 	srv := server.Instance(e, cfg)
 
 	appRouter := router.New(srv.Echo, cfg, "ze-delivery")
+	appRouter.AddRouters(partnerRoute)
+
 	srv.AddAppRouter(appRouter)
+	log.Info("runninng server at localhost:", cfg.HTTPPort)
+	err = srv.Run()
+
+	if err != nil {
+		log.Error("could not start the server.")
+		log.Error("error running service.")
+		time.Sleep(time.Millisecond * 50) // needed for printing all messages before exiting
+		os.Exit(1)
+	}
 }
 
 func atInterruption(fn func()) {

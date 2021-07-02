@@ -3,7 +3,7 @@ package server
 import (
 	"fmt"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 	"github.com/thiagoluiznunes/ze-challenge/infra/config"
 	"github.com/thiagoluiznunes/ze-challenge/server/router"

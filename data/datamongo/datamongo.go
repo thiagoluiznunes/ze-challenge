@@ -43,7 +43,7 @@ func Instance(cfg config.Config) (contract.DataManager, error) {
 
 func GetClientOptions(cfg config.Config) (clientOptions *options.ClientOptions) {
 
-	uri := cfg.DBHost + ":" + cfg.DBPort
+	uri := "mongodb://" + cfg.DBHost + ":" + cfg.DBPort
 	credential := options.Credential{
 		Username: cfg.DBUser,
 		Password: cfg.DBPassword,
@@ -65,12 +65,6 @@ func GetDB(cfg config.Config) (client *mongo.Client, ctx *context.Context, err e
 
 		context, _ := context.WithTimeout(context.Background(), 10*time.Second)
 		err = client.Connect(context)
-		if err != nil {
-			connErr = err
-			return
-		}
-
-		err = client.Ping(context, nil)
 		if err != nil {
 			connErr = err
 			return
