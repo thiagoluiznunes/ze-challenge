@@ -84,6 +84,16 @@ func GetDB(cfg config.Config) (conn Conn, err error) {
 	return conn, connErr
 }
 
+func (c *Conn) SetIndexes() (err error) {
+
+	err = setPartnerIndexes(c.db)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (c *Conn) Close() (err error) {
 	return c.client.Disconnect(*c.ctx)
 }

@@ -11,10 +11,7 @@ WORKDIR /go/src/ze-delivery-api
 
 COPY . ./
 
-RUN go get github.com/joho/godotenv
-RUN go get github.com/go-sql-driver/mysql
-RUN go get github.com/dgrijalva/jwt-go
-RUN go get golang.org/x/crypto/bcrypt
+RUN go mod download
 
 RUN go build -o bin/main main.go
 

@@ -31,6 +31,9 @@ func main() {
 	db, err := data.Connect(*(cfg))
 	endAsErr(err, "couldn't connect to database.")
 
+	err = db.SetIndexes()
+	endAsErr(err, "couldn't create to database indexes")
+
 	atInterruption(func() {
 		log.Printf("closing database connection.")
 		db.Close()
@@ -82,6 +85,7 @@ func atInterruption(fn func()) {
 func endAsErr(err error, message string) {
 	if err != nil {
 		log.Error(message)
+		log.Error(err)
 		time.Sleep(time.Millisecond * 50) // needed for printing all messages before exiting
 		os.Exit(1)
 	}

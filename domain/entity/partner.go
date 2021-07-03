@@ -21,7 +21,6 @@ type MultiPolygon struct {
 }
 
 type Partner struct {
-	ID           string       `json:"id,omitempty" bson:"_id"`
 	TradingName  string       `json:"tradingName,omitempty" bson:"tradingName"`
 	OwnerName    string       `json:"ownerName,omitempty" bson:"ownerName"`
 	Document     string       `json:"document,omitempty" bson:"document"`

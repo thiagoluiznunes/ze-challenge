@@ -6,6 +6,7 @@ import (
 	"github.com/thiagoluiznunes/ze-challenge/domain/entity"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // Schema name constants
@@ -23,6 +24,22 @@ func newPartnerRepo(db *mongo.Database) *partnerRepo {
 		db:         db,
 		collection: db.Collection(PartnerCollection),
 	}
+}
+
+func setPartnerIndexes(db *mongo.Database) (err error) {
+	_, err = db.Collection(PartnerCollection).Indexes().CreateMany(
+		context.TODO(),
+		[]mongo.IndexModel{
+			{
+				Keys:    bson.D{{Key: "document", Value: 1}},
+				Options: options.Index().SetUnique(true),
+			},
+		},
+	)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (r *partnerRepo) Add(ctx context.Context, partner entity.Partner) (err error) {

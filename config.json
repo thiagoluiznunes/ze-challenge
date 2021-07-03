@@ -1,0 +1,10 @@
+{
+    "app-name": "ze-delivery",
+    "http-prefix": "/v1",
+    "http-port": 5000,
+    "db-host": "db",
+    "db-port": 27017,
+    "db-name": "ze_delivery",
+    "db-user": "ze_user",
+    "db-password": "hES6m2EXdjKqVkRf"
+}

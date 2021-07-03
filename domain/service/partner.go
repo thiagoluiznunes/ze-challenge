@@ -2,8 +2,10 @@ package service
 
 import (
 	"context"
+	"errors"
 
 	"github.com/thiagoluiznunes/ze-challenge/domain/entity"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type PartnerService struct {
@@ -19,7 +21,9 @@ func NewPartnerService(svc *Service) (service *PartnerService) {
 func (s *PartnerService) Add(ctx context.Context, partner entity.Partner) (err error) {
 
 	err = s.svc.db.Partner().Add(ctx, partner)
-	if err != nil {
+	if mongo.IsDuplicateKeyError(err) && err != nil {
+		return errors.New("partner already registered")
+	} else if err != nil {
 		return err
 	}
 
