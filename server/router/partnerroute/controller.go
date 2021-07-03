@@ -5,7 +5,6 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/thiagoluiznunes/ze-challenge/domain/contract"
-	"github.com/thiagoluiznunes/ze-challenge/domain/entity"
 	"github.com/thiagoluiznunes/ze-challenge/infra/config"
 	"github.com/thiagoluiznunes/ze-challenge/server/viewmodel"
 )
@@ -32,23 +31,38 @@ func NewController(cfg *config.Config, partnerService contract.PartnerService) *
 	return instance
 }
 
-func (c *Controller) handlePartner(ctx echo.Context) (err error) {
+func (c *Controller) handleAddPartner(ctx echo.Context) (err error) {
 
 	input := viewmodel.PartnerRequest{}
 	err = ctx.Bind(&input)
 	if err != nil {
-		return ctx.JSON(503, "Service Unavailable")
+		return ctx.JSON(503, "service unavailable")
 	}
 
-	partner, err := entity.NewPartner(input)
+	partner, err := viewmodel.NewPartner(input)
 	if err != nil {
-		return ctx.JSON(503, "Service Unavailable")
+		return ctx.JSON(503, "service unavailable")
 	}
 
 	err = c.partnerService.Add(ctx.Request().Context(), partner)
 	if err != nil {
-		return ctx.JSON(503, "Service Unavailable")
+		return ctx.JSON(503, "service unavailable")
 	}
 
 	return ctx.JSON(200, "OK")
+}
+
+func (c *Controller) handleGetAllPartners(ctx echo.Context) (err error) {
+
+	partners, err := c.partnerService.GetAll(ctx.Request().Context())
+	if err != nil {
+		return ctx.JSON(503, "service unavailable")
+	}
+
+	response, err := viewmodel.ModelToView(partners)
+	if err != nil {
+		return ctx.JSON(503, err.Error())
+	}
+
+	return ctx.JSON(200, response)
 }

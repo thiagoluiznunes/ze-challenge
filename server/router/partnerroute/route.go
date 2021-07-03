@@ -5,7 +5,8 @@ import (
 )
 
 const (
-	rootRoute = ""
+	rootRoute      = ""
+	getAllPartners = "/all"
 )
 
 //FormRoute holds user router
@@ -27,5 +28,6 @@ func (r *FormRoute) Register(e *echo.Group) {
 
 	router := e.Group("/" + r.name)
 
-	router.POST(rootRoute, r.ctrl.handlePartner)
+	router.POST(rootRoute, r.ctrl.handleAddPartner)
+	router.GET(getAllPartners, r.ctrl.handleGetAllPartners)
 }

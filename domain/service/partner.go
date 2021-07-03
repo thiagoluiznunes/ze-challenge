@@ -25,3 +25,13 @@ func (s *PartnerService) Add(ctx context.Context, partner entity.Partner) (err e
 
 	return nil
 }
+
+func (s *PartnerService) GetAll(ctx context.Context) (partners []entity.Partner, err error) {
+
+	partners, err = s.svc.db.Partner().GetAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return partners, nil
+}

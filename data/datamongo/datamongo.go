@@ -9,6 +9,7 @@ import (
 	"github.com/thiagoluiznunes/ze-challenge/infra/config"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 var (
@@ -44,8 +45,9 @@ func GetClientOptions(cfg config.Config) (clientOptions *options.ClientOptions) 
 
 	uri := "mongodb://" + cfg.DBHost + ":" + cfg.DBPort
 	credential := options.Credential{
-		Username: cfg.DBUser,
-		Password: cfg.DBPassword,
+		AuthSource: cfg.DBName,
+		Username:   cfg.DBUser,
+		Password:   cfg.DBPassword,
 	}
 	clientOptions = options.Client().ApplyURI(uri).SetAuth(credential)
 
@@ -69,6 +71,13 @@ func GetDB(cfg config.Config) (conn Conn, err error) {
 			connErr = err
 			return
 		}
+
+		err = conn.client.Ping(context, readpref.Primary())
+		if err != nil {
+			connErr = err
+			return
+		}
+
 		conn.ctx = &context
 	})
 
