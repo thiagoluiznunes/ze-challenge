@@ -62,13 +62,13 @@ func (c *Controller) handleGetAllPartners(ctx echo.Context) (err error) {
 
 	partners, err := c.partnerService.GetAll(ctx.Request().Context())
 	if err != nil {
-		return ctx.JSON(503, "service unavailable")
+		return routeutils.ResponseAPIError(ctx, 403, err.Error())
 	}
 
 	response, err := viewmodel.ModelToView(partners)
 	if err != nil {
-		return ctx.JSON(503, err.Error())
+		return routeutils.ResponseAPIError(ctx, 403, err.Error())
 	}
 
-	return ctx.JSON(200, response)
+	return routeutils.ResponseAPIOK(ctx, response)
 }
