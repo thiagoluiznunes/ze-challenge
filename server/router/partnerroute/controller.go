@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/thiagoluiznunes/ze-challenge/domain/contract"
 	"github.com/thiagoluiznunes/ze-challenge/infra/config"
+	"github.com/thiagoluiznunes/ze-challenge/server/routeutils"
 	"github.com/thiagoluiznunes/ze-challenge/server/viewmodel"
 )
 
@@ -36,20 +37,25 @@ func (c *Controller) handleAddPartner(ctx echo.Context) (err error) {
 	input := viewmodel.PartnerRequest{}
 	err = ctx.Bind(&input)
 	if err != nil {
-		return ctx.JSON(503, "service unavailable")
+		return routeutils.ResponseAPIError(ctx, 403, err.Error())
 	}
 
 	partner, err := viewmodel.NewPartner(input)
 	if err != nil {
-		return ctx.JSON(503, "service unavailable")
+		return routeutils.ResponseAPIError(ctx, 403, err.Error())
+	}
+
+	err = partner.Validate()
+	if err != nil {
+		return routeutils.ResponseAPIError(ctx, 403, err.Error())
 	}
 
 	err = c.partnerService.Add(ctx.Request().Context(), partner)
 	if err != nil {
-		return ctx.JSON(503, "service unavailable")
+		return routeutils.ResponseAPIError(ctx, 403, err.Error())
 	}
 
-	return ctx.JSON(200, "OK")
+	return routeutils.ResponseAPIOK(ctx, "OK")
 }
 
 func (c *Controller) handleGetAllPartners(ctx echo.Context) (err error) {

@@ -7,11 +7,19 @@ import (
 )
 
 type PartnerRequest struct {
-	Name string `json:"name,omitempty"`
+	TradingName  string              `json:"tradingName,omitempty" bson:"tradingName"`
+	OwnerName    string              `json:"ownerName,omitempty" bson:"ownerName"`
+	Document     string              `json:"document,omitempty" bson:"document"`
+	CoverageArea entity.CoverageArea `json:"coverageArea,omitempty" bson:"coverageArea"`
+	Address      entity.Address      `json:"address,omitempty" bson:"address"`
 }
 
 type PartnerResponse struct {
-	Name string `json:"name,omitempty"`
+	TradingName  string              `json:"tradingName,omitempty" bson:"tradingName"`
+	OwnerName    string              `json:"ownerName,omitempty" bson:"ownerName"`
+	Document     string              `json:"document,omitempty" bson:"document"`
+	CoverageArea entity.CoverageArea `json:"coverageArea,omitempty" bson:"coverageArea"`
+	Address      entity.Address      `json:"address,omitempty" bson:"address"`
 }
 
 func NewPartner(viewmodel PartnerRequest) (partner entity.Partner, err error) {
@@ -22,7 +30,11 @@ func NewPartner(viewmodel PartnerRequest) (partner entity.Partner, err error) {
 		}
 	}()
 
-	partner.Name = viewmodel.Name
+	partner.TradingName = viewmodel.TradingName
+	partner.OwnerName = viewmodel.OwnerName
+	partner.Document = viewmodel.Document
+	partner.CoverageArea = viewmodel.CoverageArea
+	partner.Address = viewmodel.Address
 
 	return partner, nil
 }
@@ -37,7 +49,11 @@ func ModelToView(partners []entity.Partner) (partnersView []PartnerResponse, err
 
 	for _, value := range partners {
 		response := PartnerResponse{
-			Name: value.Name,
+			TradingName:  value.TradingName,
+			OwnerName:    value.OwnerName,
+			Document:     value.Document,
+			CoverageArea: value.CoverageArea,
+			Address:      value.Address,
 		}
 		partnersView = append(partnersView, response)
 	}
