@@ -2,14 +2,22 @@ package entity
 
 import "errors"
 
-type CoverageArea struct {
-	Type        string `json:"type,omitempty" bson:"type"`
-	Coordinates [][][][]float64
+//Coordinates is a set of coordinate
+type Coordinates []Coordinate
+
+//Coordinate is a [longitude, latitude]
+type Coordinate [2]float64
+
+// Point rapresent a geojson point geometry object
+type Point struct {
+	Type        string     `json:"type"`
+	Coordinates Coordinate `json:"coordinates"`
 }
 
-type Address struct {
-	Type        string    `json:"type"`
-	Coordinates []float64 `json:"coordinates"`
+// MultiPolygon rapresent a geojson mulitpolygon  geometry object
+type MultiPolygon struct {
+	Type        string          `json:"type,omitempty"`
+	Coordinates [][]Coordinates `json:"coordinates,omitempty"`
 }
 
 type Partner struct {
@@ -17,8 +25,8 @@ type Partner struct {
 	TradingName  string       `json:"tradingName,omitempty" bson:"tradingName"`
 	OwnerName    string       `json:"ownerName,omitempty" bson:"ownerName"`
 	Document     string       `json:"document,omitempty" bson:"document"`
-	CoverageArea CoverageArea `json:"coverageArea,omitempty" bson:"coverageArea"`
-	Address      Address      `json:"address,omitempty" bson:"address"`
+	CoverageArea MultiPolygon `json:"coverageArea,omitempty" bson:"coverageArea"`
+	Address      Point        `json:"address,omitempty" bson:"address"`
 }
 
 func (p *Partner) Validate() (err error) {

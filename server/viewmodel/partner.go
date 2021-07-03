@@ -7,19 +7,19 @@ import (
 )
 
 type PartnerRequest struct {
-	TradingName  string              `json:"tradingName,omitempty" bson:"tradingName"`
-	OwnerName    string              `json:"ownerName,omitempty" bson:"ownerName"`
-	Document     string              `json:"document,omitempty" bson:"document"`
-	CoverageArea entity.CoverageArea `json:"coverageArea,omitempty" bson:"coverageArea"`
-	Address      entity.Address      `json:"address,omitempty" bson:"address"`
+	TradingName  string              `json:"tradingName,omitempty"`
+	OwnerName    string              `json:"ownerName,omitempty"`
+	Document     string              `json:"document,omitempty"`
+	CoverageArea entity.MultiPolygon `json:"coverageArea,omitempty"`
+	Address      entity.Point        `json:"address,omitempty"`
 }
 
 type PartnerResponse struct {
 	TradingName  string              `json:"tradingName,omitempty" bson:"tradingName"`
 	OwnerName    string              `json:"ownerName,omitempty" bson:"ownerName"`
 	Document     string              `json:"document,omitempty" bson:"document"`
-	CoverageArea entity.CoverageArea `json:"coverageArea,omitempty" bson:"coverageArea"`
-	Address      entity.Address      `json:"address,omitempty" bson:"address"`
+	CoverageArea entity.MultiPolygon `json:"coverageArea,omitempty" bson:"coverageArea"`
+	Address      entity.Point        `json:"address,omitempty" bson:"address"`
 }
 
 func NewPartner(viewmodel PartnerRequest) (partner entity.Partner, err error) {
