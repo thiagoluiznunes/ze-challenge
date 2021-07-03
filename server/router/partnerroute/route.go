@@ -6,6 +6,7 @@ import (
 
 const (
 	rootRoute      = ""
+	getPartnerByID = "/:id"
 	getAllPartners = "/all"
 )
 
@@ -29,5 +30,6 @@ func (r *FormRoute) Register(e *echo.Group) {
 	router := e.Group("/" + r.name)
 
 	router.POST(rootRoute, r.ctrl.handleAddPartner)
+	router.GET(getPartnerByID, r.ctrl.handleGetPartnerByID)
 	router.GET(getAllPartners, r.ctrl.handleGetAllPartners)
 }

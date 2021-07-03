@@ -58,6 +58,17 @@ func (c *Controller) handleAddPartner(ctx echo.Context) (err error) {
 	return routeutils.ResponseAPIOK(ctx, "OK")
 }
 
+func (c *Controller) handleGetPartnerByID(ctx echo.Context) (err error) {
+
+	id := ctx.Param("id")
+	partner, err := c.partnerService.GetByID(ctx.Request().Context(), id)
+	if err != nil {
+		return routeutils.ResponseAPIError(ctx, 403, err.Error())
+	}
+
+	return routeutils.ResponseAPIOK(ctx, partner)
+}
+
 func (c *Controller) handleGetAllPartners(ctx echo.Context) (err error) {
 
 	partners, err := c.partnerService.GetAll(ctx.Request().Context())
@@ -65,7 +76,7 @@ func (c *Controller) handleGetAllPartners(ctx echo.Context) (err error) {
 		return routeutils.ResponseAPIError(ctx, 403, err.Error())
 	}
 
-	response, err := viewmodel.ModelToView(partners)
+	response, err := viewmodel.ModelsToView(partners)
 	if err != nil {
 		return routeutils.ResponseAPIError(ctx, 403, err.Error())
 	}

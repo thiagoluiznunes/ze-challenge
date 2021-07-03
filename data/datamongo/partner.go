@@ -5,6 +5,7 @@ import (
 
 	"github.com/thiagoluiznunes/ze-challenge/domain/entity"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -57,7 +58,25 @@ func (r *partnerRepo) Add(ctx context.Context, partner entity.Partner) (err erro
 	return nil
 }
 
-func (r *partnerRepo) GetAll(ctx context.Context) (partners []entity.Partner, err error) {
+func (r *partnerRepo) GetByID(ctx context.Context, id string) (partner entity.PartnerDoc, err error) {
+
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return partner, err
+	}
+	filter := bson.D{{"_id", objectID}}
+
+	err = r.collection.FindOne(ctx, filter).Decode(&partner)
+	if err == mongo.ErrNoDocuments {
+		return partner, err
+	} else if err != nil {
+		return partner, err
+	}
+
+	return partner, nil
+}
+
+func (r *partnerRepo) GetAll(ctx context.Context) (partners []entity.PartnerDoc, err error) {
 
 	cur, err := r.collection.Find(ctx, bson.D{})
 	partners, err = parsePartnerEntitySet(ctx, cur, err)
@@ -68,15 +87,17 @@ func (r *partnerRepo) GetAll(ctx context.Context) (partners []entity.Partner, er
 	return partners, err
 }
 
-func parsePartnerEntitySet(ctx context.Context, rows *mongo.Cursor, err error) ([]entity.Partner, error) {
+func parsePartnerEntitySet(ctx context.Context, rows *mongo.Cursor, err error) ([]entity.PartnerDoc, error) {
+
+	defer rows.Close(ctx)
 
 	if err != nil {
 		return nil, err
 	}
 
-	result := make([]entity.Partner, 0)
+	result := make([]entity.PartnerDoc, 0)
 	for rows.Next(ctx) {
-		var document entity.Partner
+		var document entity.PartnerDoc
 		err := rows.Decode(&document)
 		if err != nil {
 			return nil, err
