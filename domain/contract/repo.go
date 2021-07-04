@@ -12,6 +12,6 @@ type RepoManager interface {
 
 type PartnerRepo interface {
 	Add(ctx context.Context, partner entity.Partner) (err error)
-	GetByID(ctx context.Context, id string) (partner entity.PartnerDoc, err error)
-	GetAll(ctx context.Context) (partners []entity.PartnerDoc, err error)
+	GetByID(ctx context.Context, id string) (partner entity.Partner, err error)
+	GetAll(ctx context.Context) (partners []entity.Partner, err error)
 }

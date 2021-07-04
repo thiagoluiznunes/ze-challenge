@@ -30,7 +30,7 @@ func (s *PartnerService) Add(ctx context.Context, partner entity.Partner) (err e
 	return nil
 }
 
-func (s *PartnerService) GetByID(ctx context.Context, id string) (partner entity.PartnerDoc, err error) {
+func (s *PartnerService) GetByID(ctx context.Context, id string) (partner entity.Partner, err error) {
 
 	partner, err = s.svc.db.Partner().GetByID(ctx, id)
 	if err == mongo.ErrNoDocuments {
@@ -42,7 +42,7 @@ func (s *PartnerService) GetByID(ctx context.Context, id string) (partner entity
 	return partner, nil
 }
 
-func (s *PartnerService) GetAll(ctx context.Context) (partners []entity.PartnerDoc, err error) {
+func (s *PartnerService) GetAll(ctx context.Context) (partners []entity.Partner, err error) {
 
 	partners, err = s.svc.db.Partner().GetAll(ctx)
 	if err != nil {

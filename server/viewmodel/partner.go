@@ -7,6 +7,7 @@ import (
 )
 
 type PartnerRequest struct {
+	ID           string              `json:"id,omitempty"`
 	TradingName  string              `json:"tradingName,omitempty"`
 	OwnerName    string              `json:"ownerName,omitempty"`
 	Document     string              `json:"document,omitempty"`
@@ -31,6 +32,7 @@ func NewPartner(viewmodel PartnerRequest) (partner entity.Partner, err error) {
 		}
 	}()
 
+	partner.ID = viewmodel.ID
 	partner.TradingName = viewmodel.TradingName
 	partner.OwnerName = viewmodel.OwnerName
 	partner.Document = viewmodel.Document
@@ -40,7 +42,7 @@ func NewPartner(viewmodel PartnerRequest) (partner entity.Partner, err error) {
 	return partner, nil
 }
 
-func ModelsToView(partners []entity.PartnerDoc) (partnersView []PartnerResponse, err error) {
+func ModelsToView(partners []entity.Partner) (partnersView []PartnerResponse, err error) {
 
 	defer func() {
 		if recover() != nil {

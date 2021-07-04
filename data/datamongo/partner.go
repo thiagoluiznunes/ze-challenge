@@ -58,13 +58,20 @@ func (r *partnerRepo) Add(ctx context.Context, partner entity.Partner) (err erro
 	return nil
 }
 
-func (r *partnerRepo) GetByID(ctx context.Context, id string) (partner entity.PartnerDoc, err error) {
+func (r *partnerRepo) GetByID(ctx context.Context, id string) (partner entity.Partner, err error) {
 
-	objectID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return partner, err
+	var filter bson.D
+	var objectID primitive.ObjectID
+
+	if primitive.IsValidObjectID(id) {
+		objectID, err = primitive.ObjectIDFromHex(id)
+		if err != nil {
+			return partner, err
+		}
+		filter = bson.D{{"_id", objectID}}
+	} else {
+		filter = bson.D{{"_id", id}}
 	}
-	filter := bson.D{{"_id", objectID}}
 
 	err = r.collection.FindOne(ctx, filter).Decode(&partner)
 	if err == mongo.ErrNoDocuments {
@@ -76,7 +83,7 @@ func (r *partnerRepo) GetByID(ctx context.Context, id string) (partner entity.Pa
 	return partner, nil
 }
 
-func (r *partnerRepo) GetAll(ctx context.Context) (partners []entity.PartnerDoc, err error) {
+func (r *partnerRepo) GetAll(ctx context.Context) (partners []entity.Partner, err error) {
 
 	cur, err := r.collection.Find(ctx, bson.D{})
 	partners, err = parsePartnerEntitySet(ctx, cur, err)
@@ -87,7 +94,7 @@ func (r *partnerRepo) GetAll(ctx context.Context) (partners []entity.PartnerDoc,
 	return partners, err
 }
 
-func parsePartnerEntitySet(ctx context.Context, rows *mongo.Cursor, err error) ([]entity.PartnerDoc, error) {
+func parsePartnerEntitySet(ctx context.Context, rows *mongo.Cursor, err error) ([]entity.Partner, error) {
 
 	defer rows.Close(ctx)
 
@@ -95,9 +102,9 @@ func parsePartnerEntitySet(ctx context.Context, rows *mongo.Cursor, err error) (
 		return nil, err
 	}
 
-	result := make([]entity.PartnerDoc, 0)
+	result := make([]entity.Partner, 0)
 	for rows.Next(ctx) {
-		var document entity.PartnerDoc
+		var document entity.Partner
 		err := rows.Decode(&document)
 		if err != nil {
 			return nil, err
