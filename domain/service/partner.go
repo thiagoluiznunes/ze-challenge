@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"errors"
-	"fmt"
+	"math"
 
 	geo "github.com/kellydunn/golang-geo"
 	"github.com/thiagoluiznunes/ze-challenge/domain/entity"
@@ -72,27 +72,61 @@ func (s *PartnerService) GetNearby(ctx context.Context, point entity.Point) (par
 		return partner, err
 	}
 
-	geoPoint := geo.NewPoint(point.Coordinates[1], point.Coordinates[0])
-	coverageAreas, _ := includedInCoverageAreas(geoPoint, partners)
-	fmt.Println(coverageAreas)
+	geoPoint := geo.NewPoint(point.Coordinates[0], point.Coordinates[1])
+	partner, err = getClosestPartnerByArea(geoPoint, partners)
+	if err != nil {
+		return partner, err
+	}
 
 	return partner, nil
 }
 
-func includedInCoverageAreas(point *geo.Point, partners []entity.Partner) (areas []*geo.Polygon, err error) {
+func getClosestPartnerByArea(point *geo.Point, partners []entity.Partner) (closestPartner entity.Partner, err error) {
 
+	var closestDistance float64
 	for _, value := range partners {
 		for _, zvalue := range value.CoverageArea.Coordinates {
 			var arrayPoints []*geo.Point
 			for _, zcoord := range zvalue[0] {
-				arrayPoints = append(arrayPoints, geo.NewPoint(zcoord[1], zcoord[0]))
+				arrayPoints = append(arrayPoints, geo.NewPoint(zcoord[0], zcoord[1]))
 			}
 			polygon := geo.NewPolygon(arrayPoints)
 			if polygon.Contains(point) {
-				areas = append(areas, polygon)
+				if closestDistance == 0 {
+					closestPartner = value
+					closestDistance = distance(point.Lat(), point.Lng(), closestPartner.Address.Coordinates[1], closestPartner.Address.Coordinates[1])
+				} else {
+					valueDistance := distance(point.Lat(), point.Lng(), value.Address.Coordinates[1], value.Address.Coordinates[1])
+					if valueDistance < closestDistance {
+						closestDistance = valueDistance
+						closestPartner = value
+					}
+				}
 			}
 		}
 	}
 
-	return areas, nil
+	return closestPartner, nil
+}
+
+// Copy/Paste code
+func hsin(theta float64) float64 {
+	return math.Pow(math.Sin(theta/2), 2)
+}
+
+func distance(lat1, lon1, lat2, lon2 float64) float64 {
+	// convert to radians
+	// must cast radius as float to multiply later
+	var la1, lo1, la2, lo2, r float64
+	la1 = lat1 * math.Pi / 180
+	lo1 = lon1 * math.Pi / 180
+	la2 = lat2 * math.Pi / 180
+	lo2 = lon2 * math.Pi / 180
+
+	r = 6378100 // Earth radius in METERS
+
+	// calculate
+	h := hsin(la2-la1) + math.Cos(la1)*math.Cos(la2)*hsin(lo2-lo1)
+
+	return 2 * r * math.Asin(math.Sqrt(h))
 }

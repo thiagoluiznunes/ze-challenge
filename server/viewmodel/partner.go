@@ -80,11 +80,11 @@ func NewPoint(params map[string][]string) (point entity.Point, err error) {
 	longParam := params["long"][0]
 	latParam := params["lat"][0]
 
-	long, err := strconv.ParseFloat(longParam, 64)
 	lat, err := strconv.ParseFloat(latParam, 64)
+	long, err := strconv.ParseFloat(longParam, 64)
 	point = entity.Point{
 		Type:        domain.Point,
-		Coordinates: entity.Coordinate{long, lat},
+		Coordinates: entity.Coordinate{lat, long},
 	}
 
 	return point, nil
