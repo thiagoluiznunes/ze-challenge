@@ -2,7 +2,9 @@ package viewmodel
 
 import (
 	"errors"
+	"strconv"
 
+	"github.com/thiagoluiznunes/ze-challenge/domain"
 	"github.com/thiagoluiznunes/ze-challenge/domain/entity"
 )
 
@@ -40,6 +42,27 @@ func NewPartner(viewmodel PartnerRequest) (partner entity.Partner, err error) {
 	partner.Address = viewmodel.Address
 
 	return partner, nil
+}
+
+func NewPoint(params map[string][]string) (point entity.Point, err error) {
+
+	defer func() {
+		if recover() != nil {
+			err = errors.New("fail to create point")
+		}
+	}()
+
+	longParam := params["long"][0]
+	latParam := params["lat"][0]
+
+	long, err := strconv.ParseFloat(longParam, 64)
+	lat, err := strconv.ParseFloat(latParam, 64)
+	point = entity.Point{
+		Type:        domain.Point,
+		Coordinates: entity.Coordinate{long, lat},
+	}
+
+	return point, nil
 }
 
 func ModelsToView(partners []entity.Partner) (partnersView []PartnerResponse, err error) {

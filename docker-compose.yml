@@ -11,8 +11,19 @@ services:
     #  - "443:443" # https
     links:
       - db
+      # - db-postgis
     depends_on:
       - db
+  # db-postgis:
+  #   image: postgis/postgis
+  #   container_name: postgis_db
+  #   ports:
+  #     - "5432:5432"
+  #   environment:
+  #     POSTGRESS_DB: ze_delivery
+  #     POSTGRESS_PASSWORD: 10YKs8yyHIV0TxFI
+  #   volumes:
+  #     - /data/postgis
   db:
     image: mongo:latest
     container_name: mongo_db

@@ -83,3 +83,18 @@ func (c *Controller) handleGetAllPartners(ctx echo.Context) (err error) {
 
 	return routeutils.ResponseAPIOK(ctx, response)
 }
+
+func (c *Controller) handleGetPartnerNearby(ctx echo.Context) (err error) {
+
+	point, err := viewmodel.NewPoint(ctx.QueryParams())
+	if err != nil {
+		return routeutils.ResponseAPIError(ctx, 403, err.Error())
+	}
+
+	partner, err := c.partnerService.GetNearby(ctx.Request().Context(), point)
+	if err != nil {
+		return routeutils.ResponseAPIError(ctx, 403, err.Error())
+	}
+
+	return routeutils.ResponseAPIOK(ctx, partner)
+}

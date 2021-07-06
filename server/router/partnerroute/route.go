@@ -5,9 +5,10 @@ import (
 )
 
 const (
-	rootRoute      = ""
-	getPartnerByID = "/:id"
-	getAllPartners = "/all"
+	rootRoute        = ""
+	getPartnerByID   = "/:id"
+	getAllPartners   = "/all"
+	getPartnerNearby = "/"
 )
 
 //FormRoute holds user router
@@ -31,5 +32,6 @@ func (r *FormRoute) Register(e *echo.Group) {
 
 	router.POST(rootRoute, r.ctrl.handleAddPartner)
 	router.GET(getPartnerByID, r.ctrl.handleGetPartnerByID)
+	router.GET(getPartnerNearby, r.ctrl.handleGetPartnerNearby)
 	router.GET(getAllPartners, r.ctrl.handleGetAllPartners)
 }
