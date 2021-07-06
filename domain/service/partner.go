@@ -31,6 +31,17 @@ func (s *PartnerService) Add(ctx context.Context, partner entity.Partner) (err e
 
 	return nil
 }
+func (s *PartnerService) AddInBatch(ctx context.Context, partners []entity.Partner) (err error) {
+
+	err = s.svc.db.Partner().AddInBatch(ctx, partners)
+	if mongo.IsDuplicateKeyError(err) && err != nil {
+		return errors.New("partner already registered")
+	} else if err != nil {
+		return err
+	}
+
+	return nil
+}
 
 func (s *PartnerService) GetByID(ctx context.Context, id string) (partner entity.Partner, err error) {
 

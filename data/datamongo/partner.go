@@ -58,6 +58,21 @@ func (r *partnerRepo) Add(ctx context.Context, partner entity.Partner) (err erro
 	return nil
 }
 
+func (r *partnerRepo) AddInBatch(ctx context.Context, partners []entity.Partner) (err error) {
+
+	var batch []interface{}
+	for _, partner := range partners {
+		batch = append(batch, partner)
+	}
+
+	_, err = r.collection.InsertMany(ctx, batch)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (r *partnerRepo) GetByID(ctx context.Context, id string) (partner entity.Partner, err error) {
 
 	var filter bson.D

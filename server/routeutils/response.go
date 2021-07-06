@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/thiagoluiznunes/ze-challenge/infra/zerrors"
 )
 
 // resultWrapper has fields for standard message responses
@@ -19,12 +20,12 @@ func ResponseAPIOK(c echo.Context, data interface{}) error {
 }
 
 // ResponseAPIError returns a standard API error to the response
-func ResponseAPIError(c echo.Context, status int, message string) error {
+func ResponseAPIError(c echo.Context, data *zerrors.GeneralError) error {
 
 	returnValue := resultWrapper{
 		Error:   true,
-		Message: message,
+		Message: data.Message,
 	}
 
-	return c.JSON(status, returnValue)
+	return c.JSON(data.Code, returnValue)
 }

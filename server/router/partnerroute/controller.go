@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/thiagoluiznunes/ze-challenge/domain/contract"
 	"github.com/thiagoluiznunes/ze-challenge/infra/config"
+	"github.com/thiagoluiznunes/ze-challenge/infra/zerrors"
 	"github.com/thiagoluiznunes/ze-challenge/server/routeutils"
 	"github.com/thiagoluiznunes/ze-challenge/server/viewmodel"
 )
@@ -37,22 +38,43 @@ func (c *Controller) handleAddPartner(ctx echo.Context) (err error) {
 	input := viewmodel.PartnerRequest{}
 	err = ctx.Bind(&input)
 	if err != nil {
-		return routeutils.ResponseAPIError(ctx, 403, err.Error())
+		return routeutils.ResponseAPIError(ctx, zerrors.NewApplicationError(err.Error()))
 	}
 
 	partner, err := viewmodel.NewPartner(input)
 	if err != nil {
-		return routeutils.ResponseAPIError(ctx, 403, err.Error())
+		return routeutils.ResponseAPIError(ctx, zerrors.NewApplicationError(err.Error()))
 	}
 
 	err = partner.Validate()
 	if err != nil {
-		return routeutils.ResponseAPIError(ctx, 403, err.Error())
+		return routeutils.ResponseAPIError(ctx, zerrors.NewApplicationError(err.Error()))
 	}
 
 	err = c.partnerService.Add(ctx.Request().Context(), partner)
 	if err != nil {
-		return routeutils.ResponseAPIError(ctx, 403, err.Error())
+		return routeutils.ResponseAPIError(ctx, zerrors.NewApplicationError(err.Error()))
+	}
+
+	return routeutils.ResponseAPIOK(ctx, "OK")
+}
+
+func (c *Controller) handleAddPartnerInBatch(ctx echo.Context) (err error) {
+
+	input := viewmodel.PartnerInBatchRequest{}
+	err = ctx.Bind(&input)
+	if err != nil {
+		return routeutils.ResponseAPIError(ctx, zerrors.NewApplicationError(err.Error()))
+	}
+
+	partners, err := viewmodel.NewPartners(input)
+	if err != nil {
+		return routeutils.ResponseAPIError(ctx, zerrors.NewApplicationError(err.Error()))
+	}
+
+	err = c.partnerService.AddInBatch(ctx.Request().Context(), partners)
+	if err != nil {
+		return routeutils.ResponseAPIError(ctx, zerrors.NewApplicationError(err.Error()))
 	}
 
 	return routeutils.ResponseAPIOK(ctx, "OK")
@@ -63,7 +85,7 @@ func (c *Controller) handleGetPartnerByID(ctx echo.Context) (err error) {
 	id := ctx.Param("id")
 	partner, err := c.partnerService.GetByID(ctx.Request().Context(), id)
 	if err != nil {
-		return routeutils.ResponseAPIError(ctx, 403, err.Error())
+		return routeutils.ResponseAPIError(ctx, zerrors.NewApplicationError(err.Error()))
 	}
 
 	return routeutils.ResponseAPIOK(ctx, partner)
@@ -73,12 +95,12 @@ func (c *Controller) handleGetAllPartners(ctx echo.Context) (err error) {
 
 	partners, err := c.partnerService.GetAll(ctx.Request().Context())
 	if err != nil {
-		return routeutils.ResponseAPIError(ctx, 403, err.Error())
+		return routeutils.ResponseAPIError(ctx, zerrors.NewApplicationError(err.Error()))
 	}
 
 	response, err := viewmodel.ModelsToView(partners)
 	if err != nil {
-		return routeutils.ResponseAPIError(ctx, 403, err.Error())
+		return routeutils.ResponseAPIError(ctx, zerrors.NewApplicationError(err.Error()))
 	}
 
 	return routeutils.ResponseAPIOK(ctx, response)
@@ -88,12 +110,12 @@ func (c *Controller) handleGetPartnerNearby(ctx echo.Context) (err error) {
 
 	point, err := viewmodel.NewPoint(ctx.QueryParams())
 	if err != nil {
-		return routeutils.ResponseAPIError(ctx, 403, err.Error())
+		return routeutils.ResponseAPIError(ctx, zerrors.NewApplicationError(err.Error()))
 	}
 
 	partner, err := c.partnerService.GetNearby(ctx.Request().Context(), point)
 	if err != nil {
-		return routeutils.ResponseAPIError(ctx, 403, err.Error())
+		return routeutils.ResponseAPIError(ctx, zerrors.NewApplicationError(err.Error()))
 	}
 
 	return routeutils.ResponseAPIOK(ctx, partner)

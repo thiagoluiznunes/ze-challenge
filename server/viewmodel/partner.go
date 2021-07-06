@@ -16,6 +16,9 @@ type PartnerRequest struct {
 	CoverageArea entity.MultiPolygon `json:"coverageArea,omitempty"`
 	Address      entity.Point        `json:"address,omitempty"`
 }
+type PartnerInBatchRequest struct {
+	Partners []PartnerRequest `json:"pdvs,omitempty"`
+}
 
 type PartnerResponse struct {
 	ID           string              `json:"id,omitempty" bson:"_id"`
@@ -42,6 +45,28 @@ func NewPartner(viewmodel PartnerRequest) (partner entity.Partner, err error) {
 	partner.Address = viewmodel.Address
 
 	return partner, nil
+}
+
+func NewPartners(viewmodel PartnerInBatchRequest) (partners []entity.Partner, err error) {
+
+	defer func() {
+		if recover() != nil {
+			err = errors.New("fail to create new partners")
+		}
+	}()
+
+	for _, value := range viewmodel.Partners {
+		partners = append(partners, entity.Partner{
+			ID:           value.ID,
+			TradingName:  value.TradingName,
+			OwnerName:    value.OwnerName,
+			Document:     value.Document,
+			CoverageArea: value.CoverageArea,
+			Address:      value.Address,
+		})
+	}
+
+	return partners, nil
 }
 
 func NewPoint(params map[string][]string) (point entity.Point, err error) {
