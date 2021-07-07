@@ -65,7 +65,9 @@ func GetDB(cfg config.Config) (conn Conn, err error) {
 		}
 		conn.db = conn.client.Database(cfg.DBName)
 
-		context, _ := context.WithTimeout(context.Background(), 10*time.Second)
+		context, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+
 		err = conn.client.Connect(context)
 		if err != nil {
 			connErr = err
