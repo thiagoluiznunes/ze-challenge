@@ -1,0 +1,115 @@
+version: 2.1
+executors:
+  go:
+    docker:
+      - image: cimg/go:1.15.5
+    environment:
+      VERSION: 2.0.0
+orbs:
+  go: circleci/go@1.5.0
+jobs:
+  test:
+    executor: go
+    steps:
+      - checkout
+      - go/mod-download-cached
+      - run: go build ./...
+  lint:
+    executor: go
+    steps:
+      - run: go get honnef.co/go/tools/cmd/staticcheck
+      - checkout
+      - run: go vet ./...
+  tag:
+    executor: go
+    docker:
+      - image: cimg/base:2020.05
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "<<<<<< CHANGEME >>>>>>"
+      - checkout
+      - run: |
+          TAG="v$VERSION-$CIRCLE_BUILD_NUM-prod"
+          git tag $TAG
+          git push origin $TAG
+  tag-development:
+    executor: go
+    docker:
+      - image: cimg/base:2020.05
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "<<<<<< CHANGEME >>>>>>"
+      - checkout
+      - run: |
+          TAG="v$VERSION-$CIRCLE_BUILD_NUM-dev"
+          git tag $TAG
+          git push origin $TAG
+  publish:
+    executor: go
+    docker:
+      - image: cimg/base:2020.05
+    steps:
+      - setup_remote_docker:
+          version: 19.03.12
+      - checkout
+      - run: |
+          docker build -t ze-image .
+  publish-development:
+    executor: go
+    docker:
+      - image: cimg/base:2020.05
+    steps:
+      - setup_remote_docker:
+          version: 19.03.12
+      - checkout
+      - run: |
+          docker build -t ze-image .
+workflows:
+  version: 2
+  pipeline:
+    jobs:
+      - test:
+          filters:
+            tags:
+              only: /v.*/
+      - lint:
+          filters:
+            tags:
+              only: /v.*/
+      - tag:
+          requires:
+            - test
+            - lint
+          filters:
+            branches:
+              only: 
+                - main
+      - tag-development:
+          requires:
+            - test
+            - lint
+          filters:
+            branches:
+              only: 
+                - development
+      - publish:
+          context: ze_delivery
+          requires:
+            - test
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)+(\-[0-9]+)+(\-prod)/
+      - publish-development:
+          context: ze_delivery
+          requires:
+            - test
+            - lint
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)+(\-[0-9]+)+(\-dev)/

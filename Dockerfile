@@ -1,10 +1,7 @@
-FROM golang:latest
+FROM golang:1.14.4-alpine3.11
 
 LABEL maintainer="thiagoluiz.dev@gmail.com"
 
-# RUN apt-get update
-# RUN apt-get install vim -y
-# RUN apt-get install iputils-ping
 RUN export GOBIN=$GOPATH/bin
 
 WORKDIR /go/src/ze-delivery-api
