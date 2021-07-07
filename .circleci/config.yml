@@ -27,7 +27,7 @@ jobs:
     steps:
       - add_ssh_keys:
           fingerprints:
-            - "changeme"
+            - "ec:9f:28:a5:62:74:20:4f:61:76:ff:2a:0e:d0:b7:f8"
       - checkout
       - run: |
           TAG="v$VERSION-$CIRCLE_BUILD_NUM-prod"
@@ -40,7 +40,7 @@ jobs:
     steps:
       - add_ssh_keys:
           fingerprints:
-            - "changeme"
+            - "ec:9f:28:a5:62:74:20:4f:61:76:ff:2a:0e:d0:b7:f8"
       - checkout
       - run: |
           TAG="v$VERSION-$CIRCLE_BUILD_NUM-dev"
