@@ -54,8 +54,15 @@ jobs:
       - setup_remote_docker:
           version: 19.03.12
       - checkout
-      - run: |
-          docker build -t ze-image .
+      - aws-ecr/build-and-push-image:
+          account-url: AWS_ECR_ACCOUNT_URL
+          aws-access-key-id: AWS_ACCESS_KEY_ID_PRODUCTION
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY_PRODUCTION
+          create-repo: true
+          dockerfile: Dockerfile
+          region: AWS_REGION_SA_EAST_1
+          repo: 'ze-delivery'
+          tag: "$CIRCLE_SHA1"
   publish-development:
     executor: go
     docker:
@@ -64,8 +71,15 @@ jobs:
       - setup_remote_docker:
           version: 19.03.12
       - checkout
-      - run: |
-          docker build -t ze-image .
+      - aws-ecr/build-and-push-image:
+          account-url: AWS_ECR_ACCOUNT_URL
+          aws-access-key-id: AWS_ACCESS_KEY_ID_DEVELOPMENT
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY_DEVELOPMENT
+          create-repo: true
+          dockerfile: Dockerfile
+          region: AWS_REGION_SA_EAST_1
+          repo: 'ze-delivery'
+          tag: "$CIRCLE_SHA1"
 workflows:
   version: 2
   pipeline:

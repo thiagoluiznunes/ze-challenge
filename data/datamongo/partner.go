@@ -83,9 +83,9 @@ func (r *partnerRepo) GetByID(ctx context.Context, id string) (partner entity.Pa
 		if err != nil {
 			return partner, err
 		}
-		filter = bson.D{{"_id", objectID}}
+		filter = bson.D{{Key: "_id", Value: objectID}}
 	} else {
-		filter = bson.D{{"_id", id}}
+		filter = bson.D{{Key: "_id", Value: id}}
 	}
 
 	err = r.collection.FindOne(ctx, filter).Decode(&partner)
