@@ -8,6 +8,7 @@ executors:
 orbs:
   go: circleci/go@1.5.0
   aws-ecr: circleci/aws-ecr@6.2.0
+  aws-ecs: circleci/aws-ecs@0.0.11
 jobs:
   test:
     executor: go
