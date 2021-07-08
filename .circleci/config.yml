@@ -8,7 +8,7 @@ executors:
 orbs:
   go: circleci/go@1.5.0
   aws-ecr: circleci/aws-ecr@6.2.0
-  aws-ecs: circleci/aws-ecs@0.0.11
+  # aws-ecs: circleci/aws-ecs@0.0.11
 jobs:
   test:
     executor: go
@@ -56,22 +56,16 @@ jobs:
       - setup_remote_docker:
           version: 19.03.12
       - checkout
-      - aws-ecr/build-and-push-image:
-          account-url: AWS_ECR_ACCOUNT_URL
-          aws-access-key-id: AWS_ACCESS_KEY_ID_PRODUCTION
-          aws-secret-access-key: AWS_SECRET_ACCESS_KEY_PRODUCTION
-          create-repo: true
-          dockerfile: Dockerfile
-          region: AWS_REGION_SA_EAST_1
-          repo: 'ze-delivery-production'
-          tag: "$CIRCLE_SHA1"
-      - aws-ecs/deploy-service-update:
-          requires:
-            - aws-ecr/build-and-push-image
-          aws-region: AWS_REGION_SA_EAST_1
-          family: 'ze-delivery-service-production'
-          cluster-name: 'ze-delivery-cluster-production'
-          container-image-name-updates: 'container=ze-delivery-service-production,tag=${CIRCLE_SHA1}'
+      # - aws-ecr/build-and-push-image:
+      #     account-url: AWS_ECR_ACCOUNT_URL
+      #     aws-access-key-id: AWS_ACCESS_KEY_ID_PRODUCTION
+      #     aws-secret-access-key: AWS_SECRET_ACCESS_KEY_PRODUCTION
+      #     create-repo: true
+      #     dockerfile: Dockerfile
+      #     region: AWS_REGION_SA_EAST_1
+      #     repo: 'ze-delivery-production'
+      #     tag: "$CIRCLE_SHA1"
+
   publish-development:
     executor: go
     docker:
@@ -80,22 +74,15 @@ jobs:
       - setup_remote_docker:
           version: 19.03.12
       - checkout
-      - aws-ecr/build-and-push-image:
-          account-url: AWS_ECR_ACCOUNT_URL
-          aws-access-key-id: AWS_ACCESS_KEY_ID_DEVELOPMENT
-          aws-secret-access-key: AWS_SECRET_ACCESS_KEY_DEVELOPMENT
-          create-repo: true
-          dockerfile: Dockerfile
-          region: AWS_REGION_SA_EAST_1
-          repo: 'ze-delivery-development'
-          tag: "$CIRCLE_SHA1"
-      - aws-ecs/deploy-service-update:
-          requires:
-            - aws-ecr/build-and-push-image
-          aws-region: AWS_REGION_SA_EAST_1
-          family: 'ze-delivery-service-development'
-          cluster-name: 'ze-delivery-cluster-development'
-          container-image-name-updates: 'container=ze-delivery-service-development,tag=${CIRCLE_SHA1}'
+      # - aws-ecr/build-and-push-image:
+      #     account-url: AWS_ECR_ACCOUNT_URL
+      #     aws-access-key-id: AWS_ACCESS_KEY_ID_DEVELOPMENT
+      #     aws-secret-access-key: AWS_SECRET_ACCESS_KEY_DEVELOPMENT
+      #     create-repo: true
+      #     dockerfile: Dockerfile
+      #     region: AWS_REGION_SA_EAST_1
+      #     repo: 'ze-delivery-development'
+      #     tag: "$CIRCLE_SHA1"
 workflows:
   version: 2
   pipeline:
