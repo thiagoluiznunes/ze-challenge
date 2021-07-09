@@ -2,6 +2,7 @@ package datamongo
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"sync"
 	"time"
@@ -51,6 +52,10 @@ func GetClientOptions(cfg config.Config) (clientOptions *options.ClientOptions) 
 		Password:   cfg.DBPassword,
 	}
 	clientOptions = options.Client().ApplyURI(uri).SetAuth(credential)
+	fmt.Println("AuthSource: ", cfg.DBName)
+	fmt.Println("Username: ", cfg.DBUser)
+	fmt.Println("Password: ", cfg.DBPassword)
+	fmt.Println("URI: ", uri)
 
 	return clientOptions
 }

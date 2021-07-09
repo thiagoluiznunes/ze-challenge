@@ -10,11 +10,39 @@ orbs:
   aws-ecr: circleci/aws-ecr@6.2.0
 jobs:
   test:
-    executor: go
+    docker:
+      - image: cimg/go:1.15.5
+      - image: circleci/node:latest
+      - image: mongo:4.2
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ze_admin
+      MONGO_INITDB_ROOT_PASSWORD: 10YKs8yyHIV0TxFI
+      MONGO_INITDB_DATABASE: ze_delivery
+      MONGO_INITDB_USERNAME: ze_user
+      MONGO_INITDB_PASSWORD: hES6m2EXdjKqVkRf
     steps:
+      - attach_workspace:
+          at: .
       - checkout
-      - go/mod-download-cached
-      - run: go test ./...
+      - go/mod-download-cached  
+      - run:
+          name: Demonstrate that Mongo DB is available as localhost
+          command: |
+            curl -sSJL https://www.mongodb.org/static/pgp/server-4.2.asc | sudo apt-key add -
+            echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.2.list
+            sudo apt update
+            sudo apt install mongodb-org
+            mongo localhost --eval 'db.serverStatus()'
+      - run:
+          name: Create Ze Delivery User in the MongoDB
+          command: |
+            mongo --eval "db = db.getSiblingDB('$MONGO_INITDB_DATABASE'); db.createUser({ user: '$MONGO_INITDB_USERNAME', pwd: '$MONGO_INITDB_PASSWORD', roles: [{ role: 'readWrite', db: '$MONGO_INITDB_DATABASE' }] });"
+      - run:
+          name: Wait for Mongodb
+          command: dockerize -wait tcp://localhost:27017 -timeout 1m
+      - run:
+        name: Running tests
+        command: go test ./...
   lint:
     executor: go
     steps:
@@ -109,22 +137,22 @@ workflows:
             branches:
               only: 
                 - development
-      - publish:
-          context: ze_delivery
-          requires:
-            - test
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v[0-9]+(\.[0-9]+)+(\-[0-9]+)+(\-prod)/
-      - publish-development:
-          context: ze_delivery
-          requires:
-            - test
-            - lint
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v[0-9]+(\.[0-9]+)+(\-[0-9]+)+(\-dev)/
+      # - publish:
+      #     context: ze_delivery
+      #     requires:
+      #       - test
+      #     filters:
+      #       branches:
+      #         ignore: /.*/
+      #       tags:
+      #         only: /^v[0-9]+(\.[0-9]+)+(\-[0-9]+)+(\-prod)/
+      # - publish-development:
+      #     context: ze_delivery
+      #     requires:
+      #       - test
+      #       - lint
+      #     filters:
+      #       branches:
+      #         ignore: /.*/
+      #       tags:
+      #         only: /^v[0-9]+(\.[0-9]+)+(\-[0-9]+)+(\-dev)/
