@@ -62,9 +62,34 @@ func TestPartnerRepo(t *testing.T) {
 		assert.Nil(t, err)
 	})
 
+	t.Run("fail: add new partners in batch", func(t *testing.T) {
+		partners := make([]entity.Partner, 2)
+		err = json.Unmarshal([]byte(domain.MockRequestPartner), &partners[0])
+		assert.Nil(t, err)
+		err = json.Unmarshal([]byte(domain.MockRequestPartner), &partners[1])
+		assert.Nil(t, err)
+		assert.NotEmpty(t, partners)
+
+		for index := range partners {
+			seed := time.Now().UTC().UnixNano()
+			partners[index].ID = fmt.Sprintf("test_datamongo_%d", seed)
+			partners[index].Document = fmt.Sprintf("test_datamongo_document_%d", seed)
+		}
+
+		err = connManager.Partner().AddInBatch(context.TODO(), partners)
+		assert.Nil(t, err)
+	})
+
 	t.Run("fail: get partner by id", func(t *testing.T) {
 		newParnter, err := connManager.Partner().GetByID(context.TODO(), partner.ID)
 		assert.Nil(t, err)
+		assert.NotEmpty(t, newParnter)
 		assert.Equal(t, partner, newParnter)
+	})
+
+	t.Run("fail: get all partners", func(t *testing.T) {
+		allPartners, err := connManager.Partner().GetAll(context.TODO())
+		assert.Nil(t, err)
+		assert.NotEmpty(t, allPartners)
 	})
 }
