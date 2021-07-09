@@ -7,15 +7,15 @@ import (
 )
 
 type Config struct {
-	AppName    string `mapstructure:"app-name"`
-	Debug      bool   `mapstructure:"debug"`
-	HTTPPort   uint   `mapstructure:"http-port"`
-	HTTPPrefix string `mapstructure:"http-prefix"`
-	DBHost     string `mapstructure:"db-host"`
-	DBPort     string `mapstructure:"db-port"`
-	DBName     string `mapstructure:"db-name"`
-	DBUser     string `mapstructure:"db-user"`
-	DBPassword string `mapstructure:"db-password"`
+	AppName    string `mapstructure:"app-name" json:"app-name,omitempty"`
+	Debug      bool   `mapstructure:"debug" json:"debug,omitempty"`
+	HTTPPort   uint   `mapstructure:"http-port" json:"http-port,omitempty"`
+	HTTPPrefix string `mapstructure:"http-prefix" json:"http-prefix,omitempty"`
+	DBHost     string `mapstructure:"db-host" json:"db-host,omitempty"`
+	DBPort     uint   `mapstructure:"db-port" json:"db-port,omitempty"`
+	DBName     string `mapstructure:"db-name" json:"db-name,omitempty"`
+	DBUser     string `mapstructure:"db-user" json:"db-user,omitempty"`
+	DBPassword string `mapstructure:"db-password" json:"db-password,omitempty"`
 }
 
 func Read() (*Config, error) {

@@ -2,6 +2,7 @@ package datamongo
 
 import (
 	"context"
+	"strconv"
 	"sync"
 	"time"
 
@@ -43,7 +44,7 @@ func Instance(cfg config.Config) (contract.DataManager, error) {
 
 func GetClientOptions(cfg config.Config) (clientOptions *options.ClientOptions) {
 
-	uri := "mongodb://" + cfg.DBHost + ":" + cfg.DBPort
+	uri := "mongodb://" + cfg.DBHost + ":" + strconv.FormatUint(uint64(cfg.DBPort), 10)
 	credential := options.Credential{
 		AuthSource: cfg.DBName,
 		Username:   cfg.DBUser,

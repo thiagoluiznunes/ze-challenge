@@ -27,7 +27,7 @@ func main() {
 	_, err = json.Marshal(cfg)
 	endAsErr(err, "couldn't marshal config file")
 
-	log.Info(fmt.Sprintf("connecting to the database at %s:%s.", cfg.DBHost, cfg.DBPort))
+	log.Info(fmt.Sprintf("connecting to the database at %s:%d.", cfg.DBHost, cfg.DBPort))
 	db, err := data.Connect(*(cfg))
 	endAsErr(err, "couldn't connect to database.")
 
