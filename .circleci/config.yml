@@ -14,7 +14,7 @@ jobs:
     steps:
       - checkout
       - go/mod-download-cached
-      - run: go build ./...
+      - run: go test ./...
   lint:
     executor: go
     steps:
