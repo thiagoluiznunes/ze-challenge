@@ -1,4 +1,4 @@
-package datamongo
+package service
 
 import (
 	"context"
@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/thiagoluiznunes/ze-challenge/data"
 	"github.com/thiagoluiznunes/ze-challenge/domain"
 	"github.com/thiagoluiznunes/ze-challenge/domain/contract"
 	"github.com/thiagoluiznunes/ze-challenge/domain/entity"
@@ -15,36 +16,42 @@ import (
 )
 
 var err error
+var srv *Service
 var cfg config.Config
-var connManager contract.DataManager
+var db contract.DataManager
 
-func TestDataMongoRunner(t *testing.T) {
+func TestService(t *testing.T) {
 	// <setup code>
-	t.Run("fail: test datamongo", TestDataMongo)
-	t.Run("fail: test partner repo", TestPartnerRepo)
+	t.Run("fail: test new service", TestNewService)
+	t.Run("fail: test partner service", TestPartnerService)
 	// <tear-down code>
 }
 
-func TestDataMongo(t *testing.T) {
+func TestNewService(t *testing.T) {
 
-	t.Run("fail: instance config", func(t *testing.T) {
-		err := json.Unmarshal([]byte(domain.MockConfig), &cfg)
+	t.Run("fail: instance db", func(t *testing.T) {
+		err = json.Unmarshal([]byte(domain.MockConfig), &cfg)
+		assert.Nil(t, err)
+		db, err = data.Connect(cfg)
 		assert.Nil(t, err)
 	})
 
-	t.Run("fail: instance datamanager", func(t *testing.T) {
-		connManager, err = Instance(cfg)
+	t.Run("fail: instance new service", func(t *testing.T) {
+		srv, err = New(db, &cfg)
 		assert.Nil(t, err)
-	})
-
-	t.Run("fail: set indexes", func(t *testing.T) {
-		err = connManager.SetIndexes()
-		assert.Nil(t, err)
+		assert.NotEmpty(t, *srv)
 	})
 }
-func TestPartnerRepo(t *testing.T) {
+func TestPartnerService(t *testing.T) {
 
 	var partner entity.Partner
+	var partnerService *PartnerService
+
+	t.Run("fail: instance new partner service", func(t *testing.T) {
+		partnerService = NewPartnerService(srv)
+		assert.NotEmpty(t, *partnerService)
+	})
+
 	t.Run("fail: instance partner entity", func(t *testing.T) {
 		requestPartner := domain.MockRequestPartner
 		err := json.Unmarshal([]byte(requestPartner), &partner)
@@ -57,7 +64,7 @@ func TestPartnerRepo(t *testing.T) {
 		seed := time.Now().UTC().UnixNano()
 		partner.ID = fmt.Sprintf("test_datamongo_%d", seed)
 		partner.Document = fmt.Sprintf("test_datamongo_document_%d", seed)
-		err = connManager.Partner().Add(context.TODO(), partner)
+		err = partnerService.Add(context.TODO(), partner)
 		assert.Nil(t, err)
 	})
 
@@ -75,19 +82,19 @@ func TestPartnerRepo(t *testing.T) {
 			partners[index].Document = fmt.Sprintf("test_datamongo_document_%d", seed)
 		}
 
-		err = connManager.Partner().AddInBatch(context.TODO(), partners)
+		err = partnerService.AddInBatch(context.TODO(), partners)
 		assert.Nil(t, err)
 	})
 
 	t.Run("fail: get partner by id", func(t *testing.T) {
-		newParnter, err := connManager.Partner().GetByID(context.TODO(), partner.ID)
+		newParnter, err := partnerService.GetByID(context.TODO(), partner.ID)
 		assert.Nil(t, err)
 		assert.NotEmpty(t, newParnter)
 		assert.Equal(t, partner, newParnter)
 	})
 
 	t.Run("fail: get all partners", func(t *testing.T) {
-		allPartners, err := connManager.Partner().GetAll(context.TODO())
+		allPartners, err := partnerService.GetAll(context.TODO())
 		assert.Nil(t, err)
 		assert.NotEmpty(t, allPartners)
 	})
