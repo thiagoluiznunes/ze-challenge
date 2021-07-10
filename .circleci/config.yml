@@ -5,6 +5,11 @@ executors:
       - image: cimg/go:1.15.5
     environment:
       VERSION: 2.0.0
+  python:
+    docker:
+      - image: cimg/python:3.6
+    environment:
+      AWS_REGION_SA_EAST_1: sa-east-1
 orbs:
   go: circleci/go@1.5.0
   aws-ecr: circleci/aws-ecr@6.2.0
@@ -76,13 +81,11 @@ jobs:
           git tag $TAG
           git push origin $TAG
   publish:
-    executor: go
-    docker:
-      - image: cimg/base:2020.05
+    executor: python
     steps:
+      - checkout
       - setup_remote_docker:
           version: 19.03.12
-      - checkout
       - aws-ecr/build-and-push-image:
           account-url: AWS_ECR_ACCOUNT_URL
           aws-access-key-id: AWS_ACCESS_KEY_ID_PRODUCTION
