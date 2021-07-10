@@ -2,11 +2,12 @@
 
 **Link do desafio**: https://github.com/ZXVentures/ze-code-challenges/blob/master/backend_pt.md
 
+**Link CI pipeline do ze-challenge**: https://app.circleci.com/pipelines/github/thiagoluiznunes/ze-challenge?invite=true
+
 ---
 Ze Challenge é uma API REST que implemente as funcionalidades listasdas na sessão de **Rotas da API**.
 
 **Objetivo**: desafio técnico Zé Delivery.
-
 
 Ferramentas: Golang | Docker | Docker-compose
 
@@ -91,9 +92,7 @@ POST /v1/partner/batch
             "type": "Point",
             "coordinates": [-46.57421, -21.785741]
             }
-        },
-        {},
-        {},
+        }
     ]
 }
 ```
@@ -112,8 +111,7 @@ GET /v1/partner/:id
     "id": "test_datamongo_id",
     "tradingName": "Adega da Cerveja - Pinheiros",
     "ownerName": "Zé da Silva",
-    "document": "test_datamongo_document/0001",
-    ...
+    "document": "test_datamongo_document/0001"
 }
 ```
 #### RECUPERA O PARCEIRO MAIS PRÓXIMO ####
@@ -127,8 +125,7 @@ GET /v1/partner/?long=-25.42865&lat=-49.28424
     "id": "20",
     "tradingName": "Ze Repoe",
     "ownerName": "Eduardo Pipoca",
-    "document": "15.562.297/0001-56",
-    {}
+    "document": "15.562.297/0001-56"
 }
 ```
 #### RECUPERA TODOS OS PARCEIROS ####
@@ -144,16 +141,13 @@ GET /v1/partner/all
         "tradingName": "Adega Osasco",
         "ownerName": "Ze da Ambev",
         "document": "02.453.716/000170",
-        {}
     },
     {
         "id": "2",
         "tradingName": "Adega Pinheiros",
         "ownerName": "Ze da Silva",
         "document": "04.433.714/0001-44",
-        {}
-    },
-    {},
+    }
 ]
 ```
 
