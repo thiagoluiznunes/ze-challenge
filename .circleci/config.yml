@@ -8,6 +8,7 @@ executors:
 orbs:
   go: circleci/go@1.5.0
   aws-ecr: circleci/aws-ecr@6.2.0
+  # aws-ecs: circleci/aws-ecs@0.0.11
 jobs:
   test:
     executor: go
@@ -55,15 +56,16 @@ jobs:
       - setup_remote_docker:
           version: 19.03.12
       - checkout
-      - aws-ecr/build-and-push-image:
-          account-url: AWS_ECR_ACCOUNT_URL
-          aws-access-key-id: AWS_ACCESS_KEY_ID_PRODUCTION
-          aws-secret-access-key: AWS_SECRET_ACCESS_KEY_PRODUCTION
-          create-repo: true
-          dockerfile: Dockerfile
-          region: AWS_REGION_SA_EAST_1
-          repo: 'ze-delivery'
-          tag: "$CIRCLE_SHA1"
+      # - aws-ecr/build-and-push-image:
+      #     account-url: AWS_ECR_ACCOUNT_URL
+      #     aws-access-key-id: AWS_ACCESS_KEY_ID_PRODUCTION
+      #     aws-secret-access-key: AWS_SECRET_ACCESS_KEY_PRODUCTION
+      #     create-repo: true
+      #     dockerfile: Dockerfile
+      #     region: AWS_REGION_SA_EAST_1
+      #     repo: 'ze-delivery-production'
+      #     tag: "$CIRCLE_SHA1"
+
   publish-development:
     executor: go
     docker:
@@ -72,15 +74,15 @@ jobs:
       - setup_remote_docker:
           version: 19.03.12
       - checkout
-      - aws-ecr/build-and-push-image:
-          account-url: AWS_ECR_ACCOUNT_URL
-          aws-access-key-id: AWS_ACCESS_KEY_ID_DEVELOPMENT
-          aws-secret-access-key: AWS_SECRET_ACCESS_KEY_DEVELOPMENT
-          create-repo: true
-          dockerfile: Dockerfile
-          region: AWS_REGION_SA_EAST_1
-          repo: 'ze-delivery'
-          tag: "$CIRCLE_SHA1"
+      # - aws-ecr/build-and-push-image:
+      #     account-url: AWS_ECR_ACCOUNT_URL
+      #     aws-access-key-id: AWS_ACCESS_KEY_ID_DEVELOPMENT
+      #     aws-secret-access-key: AWS_SECRET_ACCESS_KEY_DEVELOPMENT
+      #     create-repo: true
+      #     dockerfile: Dockerfile
+      #     region: AWS_REGION_SA_EAST_1
+      #     repo: 'ze-delivery-development'
+      #     tag: "$CIRCLE_SHA1"
 workflows:
   version: 2
   pipeline:
@@ -110,7 +112,6 @@ workflows:
               only: 
                 - development
       - publish:
-          context: ze_delivery
           requires:
             - test
           filters:
@@ -119,7 +120,6 @@ workflows:
             tags:
               only: /^v[0-9]+(\.[0-9]+)+(\-[0-9]+)+(\-prod)/
       - publish-development:
-          context: ze_delivery
           requires:
             - test
             - lint
