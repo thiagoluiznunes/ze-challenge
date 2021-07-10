@@ -7,7 +7,7 @@
 **Obs:** O passo de CD seria por via de pipeline, enviando uma imagem Docker para o serviço ECR, em seguida realizando o Update do ECS container utilizando a imagem provisioada pelo ECR.
 
 ---
-Ze Challenge é uma API REST que implemente as funcionalidades listasdas na sessão de **Rotas da API**.
+Ze Challenge é uma API REST que implemente as funcionalidades listadas na sessão de **Rotas da API**.
 
 **Objetivo**: desafio técnico Zé Delivery.
 
