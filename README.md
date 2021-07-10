@@ -92,8 +92,8 @@ POST /v1/partner/batch
             "coordinates": [-46.57421, -21.785741]
             }
         },
-        {...},
-        {}
+        {},
+        {},
     ]
 }
 ```
@@ -128,13 +128,13 @@ GET /v1/partner/?long=-25.42865&lat=-49.28424
     "tradingName": "Ze Repoe",
     "ownerName": "Eduardo Pipoca",
     "document": "15.562.297/0001-56",
-    ...
+    {}
 }
 ```
 #### RECUPERA TODOS OS PARCEIROS ####
 * REQUISIÇÃO
 ```
-GET /v1/partner/?long=-25.42865&lat=-49.28424
+GET /v1/partner/all
 ```
 * RESPOSTA
 ```json
@@ -144,16 +144,16 @@ GET /v1/partner/?long=-25.42865&lat=-49.28424
         "tradingName": "Adega Osasco",
         "ownerName": "Ze da Ambev",
         "document": "02.453.716/000170",
-        ...
+        {}
     },
     {
         "id": "2",
         "tradingName": "Adega Pinheiros",
         "ownerName": "Ze da Silva",
         "document": "04.433.714/0001-44",
-        ...
+        {}
     },
-    ...
+    {},
 ]
 ```
 
