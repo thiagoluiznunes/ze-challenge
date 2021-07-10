@@ -5,7 +5,7 @@
 **Link CI pipeline do ze-challenge**: https://app.circleci.com/pipelines/github/thiagoluiznunes/ze-challenge?invite=true
 
 ---
-Ze Challenge é uma API REST que implemente as funcionalidades listasdas na sessão de **Rotas da API**.
+Ze Challenge é uma API REST que implemente as funcionalidades listadas na sessão de **Rotas da API**.
 
 **Objetivo**: desafio técnico Zé Delivery.
 
