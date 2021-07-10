@@ -2,7 +2,6 @@ package data
 
 import (
 	"encoding/json"
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,14 +13,8 @@ func TestData(t *testing.T) {
 
 	var cfg config.Config
 	var err error
-	defer func() {
-		if recover() != nil {
-			fmt.Println("fail creating connection", err)
-		}
-	}()
 
-	config := domain.MockConfig
-	err = json.Unmarshal([]byte(config), &cfg)
+	err = json.Unmarshal([]byte(domain.MockConfig), &cfg)
 	assert.Nil(t, err)
 	db, err := Connect(cfg)
 	assert.Nil(t, err)

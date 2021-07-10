@@ -5,7 +5,7 @@ info:
   contact:
     email: "thiagoluiz.dev@gmail.com"
 
-basePath: /api/v1/
+basePath: /v1/
 
 consumes:
 - application/json
@@ -14,11 +14,5 @@ produces:
 schemes:
 - http
 
-securityDefinitions:
-  bearerAuth:
-    type: apiKey
-    name: Authorization
-    in: header
-
-host: localhost:8000
+host: localhost:5001
 paths:
