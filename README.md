@@ -4,6 +4,8 @@
 
 **Link CI pipeline do ze-challenge**: https://app.circleci.com/pipelines/github/thiagoluiznunes/ze-challenge?invite=true
 
+**Obs:** O passo de CD seria por via de pipeline, enviando uma imagem Docker para o serviço ECR, em seguida realizando o Update do ECS container utilizando a imagem provisioada pelo ECR.
+
 ---
 Ze Challenge é uma API REST que implemente as funcionalidades listasdas na sessão de **Rotas da API**.
 
@@ -160,7 +162,6 @@ GET /v1/partner/all
 
 Este projeto está licenciado sob a licença MIT - consulte o arquivo [LICENSE.md](LICENSE.md) para obter detalhes
 
->Criado por **[ThiagoLuizNunes](https://www.linkedin.com/in/thiago-luiz-507483112/)** 2019.
+>Criado por **[ThiagoLuizNunes](https://www.linkedin.com/in/thiago-luiz-507483112/)** 2021.
 
 ---
-docker-compose up --build --force-recreate -d
