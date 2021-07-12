@@ -4,12 +4,16 @@
 
 **Link CI pipeline do ze-challenge**: https://app.circleci.com/pipelines/github/thiagoluiznunes/ze-challenge?invite=true
 
-**Obs:** O passo de CD seria por via de pipeline, enviando uma imagem Docker para o serviço ECR, em seguida realizando o Update do ECS container utilizando a imagem provisioada pelo ECR.
+**Obs: A etapa de CD pode ser implementada conforme o seguinte pipeline:**
+
+1 - Envio da imagem do container (Docker) para o serviço de registries, ECR (Amazon Elastic Container Registry), por exemplo.
+2 - A imagem é disseminada entre as máquinas que operam o serviço com base na atualização do registry. Nessa etapa pode-se utilizar o ECS (Amazon Elastic Container Service).
+3 - As variáveis de embiente são carregadas do serviço Parameter Store da AWS via SDK, sendo assim, todas as configs neste repositório são apenas para configuração do projeto no ambiente local, da mesma forma, as variáveis de ambiente criadas no passo de teste, são exclusivas para instanciação do MongoDB no ambiente do CircleCI.
 
 ---
-Ze Challenge é uma API REST que implemente as funcionalidades listadas na sessão de **Rotas da API**.
+Zé Challenge é uma API REST que implementa funcionalidades de inserção e recuperação de parceiros do Zé.
 
-**Objetivo**: desafio técnico Zé Delivery.
+**Objetivo**: Implementar endpoints que facilitem o cadastro de parceiros, a busca dos mesmo na base de dados e a consulta por parceiros próximos a uma localidade..
 
 Ferramentas: Golang | Docker | Docker-compose
 
@@ -37,7 +41,7 @@ Ferramentas: Golang | Docker | Docker-compose
 |   Ação                             | Requerido  | Role  |  Método  | URL
 |   ---------------------------------|------------| ----- |----------|--------------
 |   INSERE PARCEIRO                  |            |       | `POST`   | /v1/partner
-|   INSERE PARCEIROS IN BATCH        |            |       | `POST`   | /v1/partner/batch
+|   INSERE PARCEIROS EM BATCH        |            |       | `POST`   | /v1/partner/batch
 |   RECUPERA O PARCEIRO POR ID       |            |       | `GET`    | /v1/partner/:id
 |   RECUPERA O PARCEIRO MAIS PRÓXIMO |            |       | `GET`    | /v1/partner/?long=value1&lat=value2
 |   RECUPERA TODOS OS PARCEIROS      |            |       | `GET`    | /v1/partner/all
@@ -61,16 +65,18 @@ POST /v1/partner
     ]
     },
     "address": {
-    "type": "Point",
-    "coordinates": [-46.57421, -21.785741]
+        "type": "Point",
+        "coordinates": [-46.57421, -21.785741]
     }
 }
 ```
 * RESPOSTA
 ```json
-"OK"
+{
+    "id": "test_datamongo_id"
+}
 ```
-#### INSERE PARCEIROS IN BATCH ####
+#### INSERE PARCEIROS EM BATCH ####
 * REQUISIÇÃO
 ```
 POST /v1/partner/batch
@@ -91,8 +97,8 @@ POST /v1/partner/batch
             ]
             },
             "address": {
-            "type": "Point",
-            "coordinates": [-46.57421, -21.785741]
+                "type": "Point",
+                "coordinates": [-46.57421, -21.785741]
             }
         }
     ]
@@ -157,10 +163,6 @@ GET /v1/partner/all
 ### Autor
 
 * Thiago Luiz Pereira Nunes ([ThiagoLuizNunes](https://github.com/ThiagoLuizNunes)) thiagoluiz.dev@gmail.com
-
-### Licença
-
-Este projeto está licenciado sob a licença MIT - consulte o arquivo [LICENSE.md](LICENSE.md) para obter detalhes
 
 >Criado por **[ThiagoLuizNunes](https://www.linkedin.com/in/thiago-luiz-507483112/)** 2021.
 

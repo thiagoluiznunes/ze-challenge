@@ -11,11 +11,10 @@ import (
 
 // Server runs the application
 type Server struct {
-	Echo           *echo.Echo
-	cfg            *config.Config
-	middlewares    []echo.MiddlewareFunc
-	preMiddlewares []echo.MiddlewareFunc
-	appRouters     []router.Router
+	Echo        *echo.Echo
+	cfg         *config.Config
+	middlewares []echo.MiddlewareFunc
+	appRouters  []router.Router
 }
 
 // Instance returns an instance of Service

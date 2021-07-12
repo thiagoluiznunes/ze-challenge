@@ -20,12 +20,19 @@ func NewPartnerService(svc *Service) (service *PartnerService) {
 	}
 }
 
-func (s *PartnerService) Add(ctx context.Context, partner entity.Partner) (err error) {
-
-	err = s.svc.db.Partner().Add(ctx, partner)
+func checkIsDuplicateKeyError(err error) {
 	if mongo.IsDuplicateKeyError(err) && err != nil {
 		return errors.New("partner already registered")
 	} else if err != nil {
+		return err
+	}
+}
+
+func (s *PartnerService) Add(ctx context.Context, partner entity.Partner) (err error) {
+
+	err = s.svc.db.Partner().Add(ctx, partner)
+	err = checkIsDuplicateKeyError(err)
+	else if err != nil {
 		return err
 	}
 
@@ -34,9 +41,8 @@ func (s *PartnerService) Add(ctx context.Context, partner entity.Partner) (err e
 func (s *PartnerService) AddInBatch(ctx context.Context, partners []entity.Partner) (err error) {
 
 	err = s.svc.db.Partner().AddInBatch(ctx, partners)
-	if mongo.IsDuplicateKeyError(err) && err != nil {
-		return errors.New("partner already registered")
-	} else if err != nil {
+	err = checkIsDuplicateKeyError(err)
+	else if err != nil {
 		return err
 	}
 
@@ -109,7 +115,6 @@ func getClosestPartnerByArea(point *geo.Point, partners []entity.Partner) (close
 	return closestPartner, nil
 }
 
-// Copy/Paste code
 func hsin(theta float64) float64 {
 	return math.Pow(math.Sin(theta/2), 2)
 }
@@ -123,10 +128,10 @@ func distance(lat1, lon1, lat2, lon2 float64) float64 {
 	la2 = lat2 * math.Pi / 180
 	lo2 = lon2 * math.Pi / 180
 
-	r = 6378100 // Earth radius in METERS
+	earthRadius = 6378100 // Earth radius in METERS
 
 	// calculate
-	h := hsin(la2-la1) + math.Cos(la1)*math.Cos(la2)*hsin(lo2-lo1)
+	val := hsin(la2-la1) + math.Cos(la1)*math.Cos(la2)*hsin(lo2-lo1)
 
-	return 2 * r * math.Asin(math.Sqrt(h))
+	return 2 * earthRadius * math.Asin(math.Sqrt(val))
 }
