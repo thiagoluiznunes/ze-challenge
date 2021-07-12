@@ -27,15 +27,3 @@ services:
     volumes:
       - /data/db
       - ./scripts/init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh
-  swagger-ui:
-    image: swaggerapi/swagger-ui
-    container_name: swagger-ui
-    ports:
-    - "8001:8080"
-    volumes:
-      - ./docs/swagger.yml:/swagger.yml
-    environment:
-      SWAGGER_JSON: /swagger.yml
-    links:
-      - api
-      - db
