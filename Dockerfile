@@ -14,4 +14,4 @@ RUN go build -o bin/main main.go
 
 CMD ["./bin/main"]
 
-EXPOSE 8000/tcp
+EXPOSE 5001/tcp

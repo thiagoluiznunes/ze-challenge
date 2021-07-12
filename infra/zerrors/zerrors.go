@@ -4,6 +4,12 @@ import (
 	"fmt"
 )
 
+const (
+	PartnerNotFoundError         string = "partner not found"
+	PartnerAlreadyExistError     string = "partner already exists"
+	GetClosestPartnerByAreaError string = "fail to get closest partner by area"
+)
+
 // GeneralError represents an input validation error
 type GeneralError struct {
 	Field   string `json:"field_name,omitempty"`

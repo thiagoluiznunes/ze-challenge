@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"math"
 
 	geo "github.com/kellydunn/golang-geo"
@@ -22,7 +23,7 @@ func NewPartnerService(svc *Service) (service *PartnerService) {
 
 func checkIsDuplicateKeyError(err error) error {
 	if mongo.IsDuplicateKeyError(err) && err != nil {
-		return zerrors.NewConflictError("partner already exists")
+		return zerrors.NewConflictError(zerrors.PartnerAlreadyExistError)
 	} else if err != nil {
 		return err
 	}
@@ -78,13 +79,17 @@ func (s *PartnerService) GetNearby(ctx context.Context, point entity.Point) (par
 
 	partners, err := s.svc.db.Partner().GetAll(ctx)
 	if err != nil {
-		return partner, err
+		return partner, zerrors.NewApplicationError(err)
+	} else if len(partners) <= 0 {
+		return partner, zerrors.NewNotFoundError(errors.New(zerrors.PartnerNotFoundError))
 	}
 
 	geoPoint := geo.NewPoint(point.Coordinates[0], point.Coordinates[1])
 	partner, err = getClosestPartnerByArea(geoPoint, partners)
 	if err != nil {
-		return partner, err
+		return partner, zerrors.NewApplicationError(err)
+	} else if partner.ID == "" {
+		return partner, zerrors.NewNotFoundError(errors.New(zerrors.PartnerNotFoundError))
 	}
 
 	return partner, nil
@@ -93,6 +98,12 @@ func (s *PartnerService) GetNearby(ctx context.Context, point entity.Point) (par
 func getClosestPartnerByArea(point *geo.Point, partners []entity.Partner) (closestPartner entity.Partner, err error) {
 
 	var closestDistance float64
+	defer func() {
+		if recover() != nil {
+			err = zerrors.NewApplicationError(errors.New(zerrors.GetClosestPartnerByAreaError))
+		}
+	}()
+
 	for _, value := range partners {
 		for _, zvalue := range value.CoverageArea.Coordinates {
 			var arrayPoints []*geo.Point
@@ -115,7 +126,7 @@ func getClosestPartnerByArea(point *geo.Point, partners []entity.Partner) (close
 		}
 	}
 
-	return closestPartner, nil
+	return closestPartner, err
 }
 
 func hsin(theta float64) float64 {
