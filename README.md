@@ -7,13 +7,15 @@
 **Obs: A etapa de CD pode ser implementada conforme o seguinte pipeline:**
 
 1 - Envio da imagem do container (Docker) para o serviço de registries, ECR (Amazon Elastic Container Registry), por exemplo.
+
 2 - A imagem é disseminada entre as máquinas que operam o serviço com base na atualização do registry. Nessa etapa pode-se utilizar o ECS (Amazon Elastic Container Service).
-3 - As variáveis de embiente são carregadas do serviço Parameter Store da AWS via SDK, sendo assim, todas as configs neste repositório são apenas para configuração do projeto no ambiente local, da mesma forma, as variáveis de ambiente criadas no passo de teste, são exclusivas para instanciação do MongoDB no ambiente do CircleCI.
+
+3 - As variáveis de embiente são extraídas do serviço Parameter Store da AWS via SDK, sendo assim, todas as configs neste repositório são apenas para configuração do projeto no ambiente local, da mesma forma que as variáveis do pipeline do CircleCI são para os teste do fluxo.
 
 ---
 Zé Challenge é uma API REST que implementa funcionalidades de inserção e recuperação de parceiros do Zé.
 
-**Objetivo**: Implementar endpoints que facilitem o cadastro de parceiros, a busca dos mesmo na base de dados e a consulta por parceiros próximos a uma localidade..
+**Objetivo**: Implementar endpoints que facilitem o cadastro de parceiros, a busca dos mesmo na base de dados e a consulta por parceiros próximos a uma localidade.
 
 Ferramentas: Golang | Docker | Docker-compose
 
@@ -28,11 +30,10 @@ Ferramentas: Golang | Docker | Docker-compose
 
 **Obs.: As seguintes instruções foram testadas na distribuição do macOS Catalina**
 
-1 - Depois de clonar o repositório 'git clone' (comando), execute os seguintes comandos para criar as imagens docker "ze-delivery-api", "db" e "swagger-ui":
+1 - Depois de clonar o repositório 'git clone' (comando), execute os seguintes comandos para criar as imagens docker "ze-delivery-api", e "db":
   - user@user:~/diretorio_projeto_clonado/$ **docker-compose up --build --force-recreate -d**
-  - certifique-se se as portas :5001, :8001 e :27017 estão liberadas
+  - certifique-se se as portas :5001, e :27017 estão liberadas
   - acessa ze-challenge-api http://localhost:5001
-  - acessa swagger interface http://localhost:8001
 
 2 - Execução dos testes unitários
   - use@user:~/diretorio_projeto_clonado/ **go test ./... -count=1**
