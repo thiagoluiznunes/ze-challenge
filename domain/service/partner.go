@@ -30,15 +30,15 @@ func checkIsDuplicateKeyError(err error) error {
 	return nil
 }
 
-func (s *PartnerService) Add(ctx context.Context, partner entity.Partner) (err error) {
+func (s *PartnerService) Add(ctx context.Context, partner entity.Partner) (partnerID string, err error) {
 
-	err = s.svc.db.Partner().Add(ctx, partner)
+	partnerID, err = s.svc.db.Partner().Add(ctx, partner)
 	err = checkIsDuplicateKeyError(err)
 	if err != nil {
-		return err
+		return partnerID, err
 	}
 
-	return nil
+	return partnerID, nil
 }
 func (s *PartnerService) AddInBatch(ctx context.Context, partners []entity.Partner) (err error) {
 

@@ -50,12 +50,14 @@ func (c *Controller) handleAddPartner(ctx echo.Context) (err error) {
 		return routeutils.HandleAPIError(ctx, err)
 	}
 
-	err = c.partnerService.Add(ctx.Request().Context(), partner)
+	var res viewmodel.AddPartnerResponse
+	res.ID, err = c.partnerService.Add(ctx.Request().Context(), partner)
 	if err != nil {
 		return routeutils.HandleAPIError(ctx, err)
 	}
+	res.Message = "partner created with sucess"
 
-	return routeutils.ResponseAPIOK(ctx, "OK")
+	return routeutils.ResponseAPIOK(ctx, res)
 }
 
 func (c *Controller) handleAddPartnerInBatch(ctx echo.Context) (err error) {

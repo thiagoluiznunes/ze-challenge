@@ -2,6 +2,7 @@ package datamongo
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/thiagoluiznunes/ze-challenge/domain/entity"
 	"go.mongodb.org/mongo-driver/bson"
@@ -43,19 +44,20 @@ func setPartnerIndexes(db *mongo.Database) (err error) {
 	return nil
 }
 
-func (r *partnerRepo) Add(ctx context.Context, partner entity.Partner) (err error) {
+func (r *partnerRepo) Add(ctx context.Context, partner entity.Partner) (partnerID string, err error) {
 
 	document, err := bson.Marshal(partner)
 	if err != nil {
-		return err
+		return partnerID, err
 	}
 
-	_, err = r.collection.InsertOne(ctx, document)
+	cur, err := r.collection.InsertOne(ctx, document)
 	if err != nil {
-		return err
+		return partnerID, err
 	}
+	partnerID = fmt.Sprintf("%v", cur.InsertedID)
 
-	return nil
+	return partnerID, nil
 }
 
 func (r *partnerRepo) AddInBatch(ctx context.Context, partners []entity.Partner) (err error) {
