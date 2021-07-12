@@ -57,7 +57,7 @@ func TestPartnerRepo(t *testing.T) {
 		seed := time.Now().UTC().UnixNano()
 		partner.ID = fmt.Sprintf("test_datamongo_%d", seed)
 		partner.Document = fmt.Sprintf("test_datamongo_document_%d", seed)
-		err = connManager.Partner().Add(context.TODO(), partner)
+		_, err := connManager.Partner().Add(context.TODO(), partner)
 		assert.Nil(t, err)
 	})
 

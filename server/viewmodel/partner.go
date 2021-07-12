@@ -16,6 +16,7 @@ type PartnerRequest struct {
 	CoverageArea entity.MultiPolygon `json:"coverageArea,omitempty"`
 	Address      entity.Point        `json:"address,omitempty"`
 }
+
 type PartnerInBatchRequest struct {
 	Partners []PartnerRequest `json:"pdvs,omitempty"`
 }
@@ -27,6 +28,11 @@ type PartnerResponse struct {
 	Document     string              `json:"document,omitempty" bson:"document"`
 	CoverageArea entity.MultiPolygon `json:"coverageArea,omitempty" bson:"coverageArea"`
 	Address      entity.Point        `json:"address,omitempty" bson:"address"`
+}
+
+type AddPartnerResponse struct {
+	ID      string `json:"id,omitempty"`
+	Message string `json:"message,omitempty"`
 }
 
 func NewPartner(viewmodel PartnerRequest) (partner entity.Partner, err error) {
