@@ -2,11 +2,11 @@ package service
 
 import (
 	"context"
-	"errors"
 	"math"
 
 	geo "github.com/kellydunn/golang-geo"
 	"github.com/thiagoluiznunes/ze-challenge/domain/entity"
+	"github.com/thiagoluiznunes/ze-challenge/infra/zerrors"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -20,19 +20,20 @@ func NewPartnerService(svc *Service) (service *PartnerService) {
 	}
 }
 
-func checkIsDuplicateKeyError(err error) {
+func checkIsDuplicateKeyError(err error) error {
 	if mongo.IsDuplicateKeyError(err) && err != nil {
-		return errors.New("partner already registered")
+		return zerrors.NewConflictError("partner already exists")
 	} else if err != nil {
 		return err
 	}
+	return nil
 }
 
 func (s *PartnerService) Add(ctx context.Context, partner entity.Partner) (err error) {
 
 	err = s.svc.db.Partner().Add(ctx, partner)
 	err = checkIsDuplicateKeyError(err)
-	else if err != nil {
+	if err != nil {
 		return err
 	}
 
@@ -42,8 +43,8 @@ func (s *PartnerService) AddInBatch(ctx context.Context, partners []entity.Partn
 
 	err = s.svc.db.Partner().AddInBatch(ctx, partners)
 	err = checkIsDuplicateKeyError(err)
-	else if err != nil {
-		return err
+	if err != nil {
+		return zerrors.NewApplicationError(err)
 	}
 
 	return nil
@@ -53,9 +54,9 @@ func (s *PartnerService) GetByID(ctx context.Context, id string) (partner entity
 
 	partner, err = s.svc.db.Partner().GetByID(ctx, id)
 	if err == mongo.ErrNoDocuments {
-		return partner, errors.New("not found")
+		return partner, zerrors.NewNotFoundError(err)
 	} else if err != nil {
-		return partner, err
+		return partner, zerrors.NewApplicationError(err)
 	}
 
 	return partner, nil
@@ -64,8 +65,10 @@ func (s *PartnerService) GetByID(ctx context.Context, id string) (partner entity
 func (s *PartnerService) GetAll(ctx context.Context) (partners []entity.Partner, err error) {
 
 	partners, err = s.svc.db.Partner().GetAll(ctx)
-	if err != nil {
-		return nil, err
+	if len(partners) == 0 {
+		return partners, zerrors.NewNotFoundError(err)
+	} else if err != nil {
+		return partners, zerrors.NewApplicationError(err)
 	}
 
 	return partners, nil
@@ -122,7 +125,7 @@ func hsin(theta float64) float64 {
 func distance(lat1, lon1, lat2, lon2 float64) float64 {
 	// convert to radians
 	// must cast radius as float to multiply later
-	var la1, lo1, la2, lo2, r float64
+	var la1, lo1, la2, lo2, earthRadius float64
 	la1 = lat1 * math.Pi / 180
 	lo1 = lon1 * math.Pi / 180
 	la2 = lat2 * math.Pi / 180

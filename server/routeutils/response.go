@@ -20,12 +20,31 @@ func ResponseAPIOK(c echo.Context, data interface{}) error {
 }
 
 // ResponseAPIError returns a standard API error to the response
-func ResponseAPIError(c echo.Context, data *zerrors.GeneralError) error {
+func ResponseAPIError(c echo.Context, status int, message string) error {
 
 	returnValue := resultWrapper{
 		Error:   true,
-		Message: data.Message,
+		Message: message,
 	}
 
-	return c.JSON(data.Code, returnValue)
+	return c.JSON(status, returnValue)
+}
+
+// HandleAPIError applies the default error handling to the response
+func HandleAPIError(c echo.Context, errorToHandle error) error {
+
+	statusCode := http.StatusServiceUnavailable
+	errorMessage := "Service Unavailable"
+
+	if errorToHandle != nil {
+		errorString := errorToHandle.Error()
+
+		switch e := errorToHandle.(type) {
+		case *zerrors.GeneralError:
+			statusCode = e.Code
+			errorMessage = errorString
+		}
+	}
+
+	return ResponseAPIError(c, statusCode, errorMessage)
 }
