@@ -1,8 +1,13 @@
 package config
 
 import (
+	"os"
+	"reflect"
 	"strings"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/spf13/viper"
 )
 
@@ -20,6 +25,9 @@ type Config struct {
 
 func Read() (*Config, error) {
 
+	var config Config
+	var paramatersPath = os.Getenv("APP_PARAMETERS_PATH")
+
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("../")
 	viper.AddConfigPath("../..")
@@ -29,13 +37,60 @@ func Read() (*Config, error) {
 	viper.SetEnvPrefix("app")
 	viper.SetTypeByDefaultValue(true)
 
-	viper.ReadInConfig()
+	if paramatersPath != "" {
+		err := SetSecrets("sa-east-1", paramatersPath, GetKeys(config))
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		viper.ReadInConfig()
+	}
 
-	var config Config
 	err := viper.Unmarshal(&config)
 	if err != nil {
 		return nil, err
 	}
 
 	return &config, nil
+}
+
+func GetKeys(config Config) (keyNames []string) {
+
+	val := reflect.ValueOf(config)
+	for i := 0; i < val.Type().NumField(); i++ {
+		keyNames = append(keyNames, val.Type().Field(i).Tag.Get("mapstructure"))
+	}
+
+	return keyNames
+}
+
+func SetSecrets(region string, path string, keynames []string) (err error) {
+
+	for i := range keynames {
+		keynames[i] = path + keynames[i]
+	}
+
+	sess, err := session.NewSessionWithOptions(session.Options{
+		Config:            aws.Config{Region: aws.String(region)},
+		SharedConfigState: session.SharedConfigEnable,
+	})
+	if err != nil {
+		return err
+	}
+	ssmsvc := ssm.New(sess, aws.NewConfig().WithRegion(region))
+
+	params, err := ssmsvc.GetParameters(&ssm.GetParametersInput{
+		Names:          aws.StringSlice(keynames),
+		WithDecryption: aws.Bool(true),
+	})
+	if err != nil {
+		return err
+	}
+
+	for _, param := range params.Parameters {
+		name := strings.ReplaceAll(*param.Name, path, "")
+		viper.Set(name, *param.Value)
+	}
+
+	return nil
 }
