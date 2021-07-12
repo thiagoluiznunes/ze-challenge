@@ -2,7 +2,7 @@
 
 **Link do desafio**: https://github.com/ZXVentures/ze-code-challenges/blob/master/backend_pt.md
 
-**Link CI pipeline do ze-challenge**: https://app.circleci.com/pipelines/github/thiagoluiznunes/ze-challenge?invite=true
+**Link CI pipeline do ze-challenge**: https://app.circleci.com/pipelines/github/thiagoluiznunes/ze-challenge?invite=true. (Necessário login, pois o repo é privado, consequentemente o CI também).
 
 **Obs: A etapa de CD pode ser implementada conforme o seguinte pipeline:**
 
