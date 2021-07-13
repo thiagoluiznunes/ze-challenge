@@ -42,6 +42,11 @@ func (s *Server) Run() error {
 	return nil
 }
 
+// AddAppRouter adds an app router to an server
+func (s *Server) AddAppRouter(r *router.Router) {
+	s.appRouters = append(s.appRouters, *r)
+}
+
 // AddMiddleware add middleware to server
 func (s *Server) AddMiddleware(md echo.MiddlewareFunc) {
 	s.middlewares = append(s.middlewares, md)
@@ -57,9 +62,4 @@ func (s *Server) registerAppRoutes() {
 	for _, appRouter := range s.appRouters {
 		appRouter.Register(s.Echo)
 	}
-}
-
-// AddAppRouter adds an app router to an server
-func (s *Server) AddAppRouter(r *router.Router) {
-	s.appRouters = append(s.appRouters, *r)
 }
