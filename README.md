@@ -35,8 +35,7 @@ Ferramentas: Golang | Docker | Docker-compose
   - certifique-se se as portas :5001, e :27017 estão liberadas
   - acessa ze-challenge-api http://localhost:5001
 
-2 - Execução dos testes unitários
-  - use@user:~/diretorio_projeto_clonado/ **go test ./... -count=1**
+2 - A execução dos testes unitários é uma etapa no processo de CI deste repositório, vista no pipeline do CircleCIl
 
 ### Rotas da API ###
 |   Ação                             | Requerido  | Role  |  Método  | URL
