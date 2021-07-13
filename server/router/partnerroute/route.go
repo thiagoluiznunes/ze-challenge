@@ -12,22 +12,22 @@ const (
 	getPartnerNearby = "/"
 )
 
-//FormRoute holds user router
-type FormRoute struct {
+//PartnerRoute holds user router
+type PartnerRoute struct {
 	ctrl *Controller
 	name string
 }
 
-//NewRouter returns an instance of FormRoute
-func NewRouter(routeName string, ctrl *Controller) *FormRoute {
-	return &FormRoute{
+//NewRouter returns an instance of PartnerRoute
+func NewRouter(routeName string, ctrl *Controller) *PartnerRoute {
+	return &PartnerRoute{
 		ctrl: ctrl,
 		name: routeName,
 	}
 }
 
 // Register registers the routes in the echo group
-func (r *FormRoute) Register(e *echo.Group) {
+func (r *PartnerRoute) Register(e *echo.Group) {
 
 	router := e.Group("/" + r.name)
 
