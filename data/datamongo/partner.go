@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/thiagoluiznunes/ze-challenge/domain/entity"
+	"github.com/thiagoluiznunes/ze-challenge/server/serverconfig"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -51,6 +52,8 @@ func (r *partnerRepo) Add(ctx context.Context, partner entity.Partner) (partnerI
 		return partnerID, err
 	}
 
+	defer serverconfig.CreateNewRelicMongoDBSegment(ctx, PartnerCollection, "InsertOne")
+
 	cur, err := r.collection.InsertOne(ctx, document)
 	if err != nil {
 		return partnerID, err
@@ -66,6 +69,8 @@ func (r *partnerRepo) AddInBatch(ctx context.Context, partners []entity.Partner)
 	for _, partner := range partners {
 		batch = append(batch, partner)
 	}
+
+	defer serverconfig.CreateNewRelicMongoDBSegment(ctx, PartnerCollection, "InsertMany")
 
 	_, err = r.collection.InsertMany(ctx, batch)
 	if err != nil {
@@ -90,6 +95,8 @@ func (r *partnerRepo) GetByID(ctx context.Context, id string) (partner entity.Pa
 		filter = bson.D{{Key: "_id", Value: id}}
 	}
 
+	defer serverconfig.CreateNewRelicMongoDBSegment(ctx, PartnerCollection, "FindOne")
+
 	err = r.collection.FindOne(ctx, filter).Decode(&partner)
 	if err == mongo.ErrNoDocuments {
 		return partner, err
@@ -101,6 +108,8 @@ func (r *partnerRepo) GetByID(ctx context.Context, id string) (partner entity.Pa
 }
 
 func (r *partnerRepo) GetAll(ctx context.Context) (partners []entity.Partner, err error) {
+
+	defer serverconfig.CreateNewRelicMongoDBSegment(ctx, PartnerCollection, "Find")
 
 	cur, err := r.collection.Find(ctx, bson.D{})
 	partners, err = parsePartnerEntitySet(ctx, cur, err)

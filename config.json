@@ -6,5 +6,9 @@
     "db-port": 27017,
     "db-name": "ze_delivery",
     "db-user": "ze_user",
-    "db-password": "hES6m2EXdjKqVkRf"
+    "db-password": "hES6m2EXdjKqVkRf",
+    "new-relic-application-name": "ze-delivery-api",
+    "new-relic-enabled": "true",
+    "new-relic-error-collecting": "true",
+    "new-relic-license-key": ""
 }
