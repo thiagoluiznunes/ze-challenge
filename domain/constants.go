@@ -1,5 +1,8 @@
 package domain
 
+// NRTransactionKey indicates the key used by NewRelic when executing a new transaction
+const NRTransactionKey = "NRTransaction"
+
 const (
 	Point        string = "Point"
 	MultiPolygon string = "MultiPolygon"

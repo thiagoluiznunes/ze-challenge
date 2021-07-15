@@ -1,9 +1,11 @@
 package partnerroute
 
 import (
+	"context"
 	"sync"
 
 	"github.com/labstack/echo/v4"
+	"github.com/thiagoluiznunes/ze-challenge/domain"
 	"github.com/thiagoluiznunes/ze-challenge/domain/contract"
 	"github.com/thiagoluiznunes/ze-challenge/infra/config"
 	"github.com/thiagoluiznunes/ze-challenge/server/routeutils"
@@ -34,6 +36,9 @@ func NewController(cfg *config.Config, partnerService contract.PartnerService) *
 
 func (c *Controller) handleAddPartner(ctx echo.Context) (err error) {
 
+	txn := ctx.Get(domain.NRTransactionKey)
+	context := context.WithValue(ctx.Request().Context(), domain.NRTransactionKey, txn)
+
 	input := viewmodel.PartnerRequest{}
 	err = ctx.Bind(&input)
 	if err != nil {
@@ -51,7 +56,7 @@ func (c *Controller) handleAddPartner(ctx echo.Context) (err error) {
 	}
 
 	var res viewmodel.AddPartnerResponse
-	res.ID, err = c.partnerService.Add(ctx.Request().Context(), partner)
+	res.ID, err = c.partnerService.Add(context, partner)
 	if err != nil {
 		return routeutils.HandleAPIError(ctx, err)
 	}
@@ -61,6 +66,9 @@ func (c *Controller) handleAddPartner(ctx echo.Context) (err error) {
 }
 
 func (c *Controller) handleAddPartnerInBatch(ctx echo.Context) (err error) {
+
+	txn := ctx.Get(domain.NRTransactionKey)
+	context := context.WithValue(ctx.Request().Context(), domain.NRTransactionKey, txn)
 
 	input := viewmodel.PartnerInBatchRequest{}
 	err = ctx.Bind(&input)
@@ -73,7 +81,7 @@ func (c *Controller) handleAddPartnerInBatch(ctx echo.Context) (err error) {
 		return routeutils.HandleAPIError(ctx, err)
 	}
 
-	err = c.partnerService.AddInBatch(ctx.Request().Context(), partners)
+	err = c.partnerService.AddInBatch(context, partners)
 	if err != nil {
 		return routeutils.HandleAPIError(ctx, err)
 	}
@@ -83,8 +91,11 @@ func (c *Controller) handleAddPartnerInBatch(ctx echo.Context) (err error) {
 
 func (c *Controller) handleGetPartnerByID(ctx echo.Context) (err error) {
 
+	txn := ctx.Get(domain.NRTransactionKey)
+	context := context.WithValue(ctx.Request().Context(), domain.NRTransactionKey, txn)
+
 	id := ctx.Param("id")
-	partner, err := c.partnerService.GetByID(ctx.Request().Context(), id)
+	partner, err := c.partnerService.GetByID(context, id)
 	if err != nil {
 		return routeutils.HandleAPIError(ctx, err)
 	}
@@ -94,7 +105,10 @@ func (c *Controller) handleGetPartnerByID(ctx echo.Context) (err error) {
 
 func (c *Controller) handleGetAllPartners(ctx echo.Context) (err error) {
 
-	partners, err := c.partnerService.GetAll(ctx.Request().Context())
+	txn := ctx.Get(domain.NRTransactionKey)
+	context := context.WithValue(ctx.Request().Context(), domain.NRTransactionKey, txn)
+
+	partners, err := c.partnerService.GetAll(context)
 	if err != nil {
 		return routeutils.HandleAPIError(ctx, err)
 	}
@@ -109,12 +123,15 @@ func (c *Controller) handleGetAllPartners(ctx echo.Context) (err error) {
 
 func (c *Controller) handleGetPartnerNearby(ctx echo.Context) (err error) {
 
+	txn := ctx.Get(domain.NRTransactionKey)
+	context := context.WithValue(ctx.Request().Context(), domain.NRTransactionKey, txn)
+
 	point, err := viewmodel.NewPoint(ctx.QueryParams())
 	if err != nil {
 		return routeutils.HandleAPIError(ctx, err)
 	}
 
-	partner, err := c.partnerService.GetNearby(ctx.Request().Context(), point)
+	partner, err := c.partnerService.GetNearby(context, point)
 	if err != nil {
 		return routeutils.HandleAPIError(ctx, err)
 	}

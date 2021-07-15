@@ -12,15 +12,20 @@ import (
 )
 
 type Config struct {
-	AppName    string `mapstructure:"app-name" json:"app-name,omitempty"`
-	Debug      bool   `mapstructure:"debug" json:"debug,omitempty"`
-	HTTPPort   uint   `mapstructure:"http-port" json:"http-port,omitempty"`
-	HTTPPrefix string `mapstructure:"http-prefix" json:"http-prefix,omitempty"`
-	DBHost     string `mapstructure:"db-host" json:"db-host,omitempty"`
-	DBPort     uint   `mapstructure:"db-port" json:"db-port,omitempty"`
-	DBName     string `mapstructure:"db-name" json:"db-name,omitempty"`
-	DBUser     string `mapstructure:"db-user" json:"db-user,omitempty"`
-	DBPassword string `mapstructure:"db-password" json:"db-password,omitempty"`
+	AppName                  string `mapstructure:"app-name" json:"app-name,omitempty"`
+	Debug                    bool   `mapstructure:"debug" json:"debug,omitempty"`
+	HTTPPort                 uint   `mapstructure:"http-port" json:"http-port,omitempty"`
+	HTTPPrefix               string `mapstructure:"http-prefix" json:"http-prefix,omitempty"`
+	DBHost                   string `mapstructure:"db-host" json:"db-host,omitempty"`
+	DBPort                   uint   `mapstructure:"db-port" json:"db-port,omitempty"`
+	DBName                   string `mapstructure:"db-name" json:"db-name,omitempty"`
+	DBUser                   string `mapstructure:"db-user" json:"db-user,omitempty"`
+	DBPassword               string `mapstructure:"db-password" json:"db-password,omitempty"`
+	NewRelicApplicationName  string `mapstructure:"new-relic-application-name"`
+	NewRelicLicenseKey       string `mapstructure:"new-relic-license-key"`
+	NewRelicEnabled          bool   `mapstructure:"new-relic-enabled"`
+	NewRelicErrorCollecting  bool   `mapstructure:"new-relic-error-collecting"`
+	DistributedTracerEnabled bool   `mapstructure:"new-relic-distributed-tracer"`
 }
 
 func Read() (*Config, error) {
