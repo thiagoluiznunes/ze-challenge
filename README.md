@@ -4,6 +4,8 @@
 
 **Link CI pipeline do ze-challenge**: https://app.circleci.com/pipelines/github/thiagoluiznunes/ze-challenge?invite=true. (Necessário login, pois o repo é privado, consequentemente o CI também).
 
+**Link do monitoramento New Relic**: https://one.newrelic.com/-/0xVwgz5plQJ
+
 **Obs: A etapa de CD pode ser implementada conforme o seguinte pipeline:**
 
 1 - Envio da imagem do container (Docker) para o serviço de registries, ECR (Amazon Elastic Container Registry), por exemplo.
