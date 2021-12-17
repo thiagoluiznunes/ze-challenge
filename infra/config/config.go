@@ -99,3 +99,34 @@ func SetSecrets(region string, path string, keynames []string) (err error) {
 
 	return nil
 }
+
+// func initConfig() {
+
+// 	err := setViperDefaults(Config)
+// 	if err != nil {
+// 		cobra.CheckErr(err)
+// 	}
+
+// 	viper.SetTypeByDefaultValue(true)
+// 	viper.AddConfigPath(".")
+// 	viper.SetConfigFile(".env")
+
+// 	viper.ReadInConfig()
+// 	viper.AutomaticEnv()
+
+// 	err = viper.Unmarshal(&Config)
+// 	cobra.CheckErr(err)
+// }
+
+// func setViperDefaults(cfg infrastructure.Config) (err error) {
+
+// 	cfgMap := make(map[string]interface{})
+// 	err = mapstructure.Decode(cfg, &cfgMap)
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	err = viper.MergeConfigMap(cfgMap)
+
+// 	return err
+// }
